@@ -35,7 +35,11 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
-
+# Authenticated file
 script-nodejs-quickstart.json
 
+# Credentials file
 client_secret.json
+
+# Intellij project folder
+.idea
