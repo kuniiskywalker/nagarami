@@ -55,9 +55,18 @@ const createMainWindow = (auth) => {
 
 const render = () => {
     let apikey = fs.readFileSync(APIKEY_PATH, "utf-8")
-    youtube.videos.list({part: 'id', chart: 'mostPopular', key: apikey}, function (a, result, response) {
-       console.log(result.items);
+    // youtube.videos.list({part: 'id', chart: 'mostPopular', key: apikey}, function (a, result, response) {
+    //    console.log(result.items);
+    // });
+    // youtube.channels.list({part: 'id', mine: true, key: apikey}, function (a, result, response) {
+    //    console.log(result);
+    // });
+
+    youtube.subscriptions.list({part: 'snippet', mine: true, maxResults: 50, key: apikey}, function (a, result, response) {
+       let aa = result.items.map((value, key) => {return value.snippet})
+       console.log( aa )
     });
+
     mainWindow.webContents.send('render', youtube.getConfig());
 };
 
