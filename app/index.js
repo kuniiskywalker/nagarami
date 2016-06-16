@@ -35,13 +35,14 @@ let mainWindow;
 let authWindow;
 
 // メインウィンドウ表示処理
-function createMainWindow() {
+function createMainWindow(auth) {
     mainWindow = new BrowserWindow({width: 800, height: 600});
     mainWindow.loadURL('file://' + __dirname + '/index.html');
     mainWindow.openDevTools();
     mainWindow.on('closed', function () {
         mainWindow = null;
     });
+    mainWindow.webContents.send('start', auth.credentials.access_token);
 }
 
 // 認証用ウィンドウ表示処理
@@ -104,8 +105,8 @@ function authorize(credentials, callback) {
         if (err) {
             getNewToken(oauth, callback);
         } else {
-            callback(oauth);
             oauth.setCredentials(JSON.parse(token));
+            callback(oauth);
         }
     });
 }
@@ -161,8 +162,10 @@ function checkCredentialsFile(callback) {
 
 // ログイン成功時に実行される関数
 function afterAuthCallback(auth) {
-    createMainWindow();
-    if (authWindow) {
-        authWindow.close();
-    }
+    createMainWindow(auth);
+    setTimeout(() => {
+      if (authWindow) {
+          authWindow.close();
+      }
+    }, 500)
 }
