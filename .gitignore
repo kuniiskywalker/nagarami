@@ -43,3 +43,6 @@ client_secret.json
 
 # Intellij project folder
 .idea
+
+# API KEY file
+apikey
