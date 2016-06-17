@@ -1,10 +1,10 @@
 'use strict';
 
 //追加モジュールの宣言
-let fs = require('fs');
-let youtube = require("youtube-api");
+import fs from 'fs'
+import youtube from 'youtube-api'
 
-const electron = require('electron');
+import electron from 'electron'
 
 // アプリケーションをコントロールするモジュール
 const app = electron.app;
