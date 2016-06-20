@@ -20,7 +20,7 @@ var ipcRenderer = require('electron').ipcRenderer;
     });
 
     // メインプロセスに引数を送信
-    ipcRenderer.send('load');
+    ipcRenderer.send('auth-window-load');
 })();
 
 function gcodeinput() {
@@ -32,5 +32,5 @@ function gcodeinput() {
     }
 
     // メインプロセスに引数を送信
-    ipcRenderer.send('auth', values);
+    ipcRenderer.send('auth-window-input-token', values);
 }
