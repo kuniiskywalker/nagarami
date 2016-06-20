@@ -45,38 +45,34 @@ const createMainWindow = (auth) => {
     mainWindow = new BrowserWindow({width: 800, height: 600});
     mainWindow.loadURL('file://' + __dirname + '/index.html');
     mainWindow.openDevTools();
-    mainWindow.on('closed', function () {
+    mainWindow.on('closed', () => {
         mainWindow = null;
     });
+    // メインウィンドウの読み込み完了後の処理
     mainWindow.webContents.on("dom-ready", () => {
-      render()
+        initMain();
+        mainWindow.webContents.send('render', {});
     });
-};
-
-function render() {
-    let apikey = fs.readFileSync(APIKEY_PATH)
-
-    youtube.subscriptions.list({part: 'snippet', mine: true, maxResults: 50, key: apikey}, function (a, result, response) {
-       let aa = result.items.map((value, key) => {return value.snippet})
-       console.log( aa )
-    });
-
-    mainWindow.webContents.send('render', {});
 };
 
 // 認証用ウィンドウ表示処理
-const createAuthWindow = () => {
+const createAuthWindow = (authUrl) => {
     authWindow = new BrowserWindow({width: 800, height: 600});
     authWindow.loadURL('file://' + __dirname + '/auth.html');
     authWindow.openDevTools();
-    authWindow.on('closed', function () {
+    authWindow.on('closed', () => {
         authWindow = null;
+    });
+    // 認証ウィンドウの読み込み完了後の処理
+    authWindow.webContents.on("dom-ready", () => {
+        initAuth();
+        authWindow.webContents.send('async-url', authUrl);
     });
 };
 
 // 保存したtoken情報を取得
 const getSavedToken = () => {
-    return new Promise(function(resolve, reject){
+    return new Promise((resolve, reject) => {
         fs.readFile(TOKEN_PATH, 'utf-8', (err, text) => {
             if(err) {
                 reject(err);
@@ -90,23 +86,27 @@ const getSavedToken = () => {
 };
 
 //OAuth認証関係のスクリプト
-async function authorize(credentials, callback) {
+function authorize(credentials) {
     let oauth = youtube.authenticate({
         type: "oauth",
         client_id: credentials.installed.client_id,
         client_secret: credentials.installed.client_secret,
         redirect_url: credentials.installed.redirect_uris[0]
     });
-    try {
-　　　    const saved_tokens = await getSavedToken();
-    　　　reauthorize(oauth, saved_tokens, callback);
-    } catch(e) {
-    　　  let authUrl = oauth.generateAuthUrl({
-      　     access_type: 'offline',
-        　　  scope: SCOPES
-      　 });
-        authWindow.webContents.send('async-url', authUrl);
-    }
+    let authUrl = oauth.generateAuthUrl({
+        access_type: 'offline',
+        scope: SCOPES
+    });
+    return new Promise((resolve, reject) => {
+      getSavedToken()
+        .then((saved_tokens) => {
+            resolve(oauth, saved_tokens);
+        })
+        .catch((err) => {
+            reject(authUrl, err);
+            return;
+        });
+    });
 };
 
 // トークン取得関数
@@ -117,7 +117,7 @@ const newauthorize = (credentials, token, callback) => {
         client_secret: credentials.installed.client_secret,
         redirect_url: credentials.installed.redirect_uris[0]
     });
-    oauth.getToken(token, function (err, token_info) {
+    oauth.getToken(token, (err, token_info) => {
         if (err) {
             authWindow.webContents.send('message', "アクセストークンファイルが開けません");
             return;
@@ -136,8 +136,37 @@ const newauthorize = (credentials, token, callback) => {
     });
 };
 
+// メインウィンドウの初期処理
+const initMain = () => {
+  checkCredentialsFile()
+      .then((content) => {
+          return authorize(JSON.parse(content));
+      })
+      .then((oauth, saved_tokens) => {
+          reauthorize(oauth, saved_tokens)
+            .then(() => {
+              afterAuthCallback();
+            });
+      }, (authUrl, err) => {
+          createAuthWindow(authUrl);
+      });
+}
+
+// 認証ウィンドウの初期処理
+const initAuth = () => {
+  checkCredentialsFile()
+    .then((content) => {
+        authorize(JSON.parse(content), () => {
+            afterAuthCallback();
+        });
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+}
+
 //OAuth認証関係のスクリプト
-async function reauthorize(oauth, saved_tokens, callback) {
+async function reauthorize(oauth, saved_tokens) {
     oauth.setCredentials({
         access_token: saved_tokens.access_token,
         refresh_token: saved_tokens.refresh_token,
@@ -146,25 +175,32 @@ async function reauthorize(oauth, saved_tokens, callback) {
     // refresh token
     const refresh_tokens = await refreshToken(oauth);
 
-    // save token
-    storeToken(refresh_tokens);
+    return new Promise((resolve, reject) => {
+      try {
 
-    // set refresh token
-    oauth.setCredentials({
-        access_token: refresh_tokens.access_token,
-        refresh_token: refresh_tokens.refresh_token,
+          // save token
+          storeToken(refresh_tokens);
+
+          // set refresh token
+          oauth.setCredentials({
+              access_token: refresh_tokens.access_token,
+              refresh_token: refresh_tokens.refresh_token,
+          });
+          youtube.authenticate({
+              type: "key",
+              key: oauth,
+          });
+          resolve();
+      } catch(e) {
+          reject(e);
+      }
     });
-    youtube.authenticate({
-      type: "key",
-      key: oauth,
-    });
-    callback();
 };
 
 // refresh token
 const refreshToken = (oauth) => {
-  var promise = new Promise(function(resolve, reject){
-      oauth.refreshAccessToken(function(err, tokens) {
+  var promise = new Promise((resolve, reject) => {
+      oauth.refreshAccessToken((err, tokens) => {
           if(err) {
               return reject(err);
           } else {
@@ -190,7 +226,7 @@ const storeToken = (token) => {
 
 // アプリケーション資格ファイルチェック
 const checkCredentialsFile = () => {
-    return new Promise(function(resolve, reject){
+    return new Promise((resolve, reject) => {
         fs.readFile(CREDENTIALS_PATH, 'utf-8', (err, text) => {
             if(err) {
                 reject(err);
@@ -204,49 +240,37 @@ const checkCredentialsFile = () => {
 
 // ログイン成功時に実行される関数
 const afterAuthCallback = () => {
-    createMainWindow();
+    // createMainWindow();
     setTimeout(() => {
       if (authWindow) {
           authWindow.close();
       }
+      mainWindow.webContents.send('render', {});
     }, 500)
 };
 
 // 起動時に呼ばれるイベント
-app.on('ready', function () {
-    createAuthWindow();
+app.on('ready', () => {
+    createMainWindow();
 });
 
 // ウィンドウを閉じた時のイベント
-app.on('window-all-closed', function () {
+app.on('window-all-closed', () => {
     if (process.platform != 'darwin') {
         app.quit();
     }
 });
 
-app.on('activate', function () {
+app.on('activate', () => {
     if (mainWindow === null) {
-        createAuthWindow();
+        createMainWindow();
     }
 });
 
 // 非同期プロセス通信
 
-// 認証ウィンドウ読み込み完了後イベント
-ipcMain.on('auth-window-load', function () {
-    checkCredentialsFile()
-        .then((content) => {
-            authorize(JSON.parse(content), () => {
-                afterAuthCallback();
-            });
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
-
 // 認証ウィンドウのトークン入力時のイベント
-ipcMain.on('auth-window-input-token', function (event, token) {
+ipcMain.on('auth-window-input-token', (event, token) => {
     checkCredentialsFile()
       .then((content) => {
           newauthorize(JSON.parse(content), token, () => {
