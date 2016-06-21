@@ -9,19 +9,11 @@ import electron from 'electron'
 import { applyMiddleware, createStore } from 'redux';
 
 // reducer
-const counter = (state = {count: 0}, action) => {
-    switch(action.type) {
-  　 case 'INCREMENT_COUNTER':
-        return {count: state.count + 1}　
-  　 case 'DECREMENT_COUNTER':
-        return {count: state.count - 1}
-  　 default:
-        return state
-    }
-}
+import rootReducer from './reducers/index.js'
 
 // store
-const myStore = createStore(counter);
+const initialState = {};
+const myStore = createStore(rootReducer, initialState);
 
 // 状態変更を監視してコンソールに出力
 myStore.subscribe(() => console.log(myStore.getState()))
@@ -54,6 +46,8 @@ let CREDENTIALS_PATH = './config/client_secret.json';
 // 取得したトークンの保存先
 let TOKEN_PATH = './config/script-nodejs-quickstart.json';
 
+const apikey = fs.readFileSync(APIKEY_PATH, "utf-8");
+
 // メインウィンドウ
 let mainWindow;
 
@@ -71,7 +65,6 @@ const createMainWindow = (auth) => {
     // メインウィンドウの読み込み完了後の処理
     mainWindow.webContents.on("dom-ready", () => {
         initMain();
-        render();
     });
 };
 
@@ -120,7 +113,11 @@ function authorize(credentials) {
     return new Promise((resolve, reject) => {
       getSavedToken()
         .then((saved_tokens) => {
-            resolve(oauth, saved_tokens);
+            oauth.setCredentials({
+                access_token: saved_tokens.access_token,
+                refresh_token: saved_tokens.refresh_token,
+            });
+            resolve(oauth);
         })
         .catch((err) => {
             reject(authUrl, err);
@@ -162,10 +159,12 @@ const initMain = () => {
       .then((content) => {
           return authorize(JSON.parse(content));
       })
-      .then((oauth, saved_tokens) => {
-          reauthorize(oauth, saved_tokens)
+      .then((oauth) => {
+          return reauthorize(oauth)
             .then(() => {
-              afterAuthCallback();
+                afterAuthCallback();
+            }, (e) => {
+                console.log(e);
             });
       }, (authUrl, err) => {
           createAuthWindow(authUrl);
@@ -186,16 +185,11 @@ const initAuth = () => {
 }
 
 const render = () => {
-  mainWindow.webContents.send("render", myStore.getState())
+　　  mainWindow.webContents.send("render", myStore.getState())
 };
 
 //OAuth認証関係のスクリプト
-async function reauthorize(oauth, saved_tokens) {
-    oauth.setCredentials({
-        access_token: saved_tokens.access_token,
-        refresh_token: saved_tokens.refresh_token,
-    });
-
+async function reauthorize(oauth) {
     // refresh token
     const refresh_tokens = await refreshToken(oauth);
 
@@ -306,8 +300,10 @@ ipcMain.on('auth-window-input-token', (event, token) => {
       });
 });
 
-ipcMain.on("dispatch-store", (sender, e) => {
-  console.log( e );
-  myStore.dispatch(e);
-  render();
+// Actions
+ipcMain.on("fetch-youtube-channels", (sender, e) => {
+　　　　youtube.subscriptions.list({part: 'snippet', mine: true, maxResults: 50, key: apikey}, function (a, result, response) {
+    　　　　　myStore.dispatch({type: "FETCH_CHANNELS", channels: result.items});
+    　　　　 render();
+　　　　});
 });
