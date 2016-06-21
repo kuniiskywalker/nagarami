@@ -6,6 +6,26 @@ import youtube from 'youtube-api'
 
 import electron from 'electron'
 
+import { applyMiddleware, createStore } from 'redux';
+
+// reducer
+const counter = (state = {count: 0}, action) => {
+    switch(action.type) {
+  　 case 'INCREMENT_COUNTER':
+        return {count: state.count + 1}　
+  　 case 'DECREMENT_COUNTER':
+        return {count: state.count - 1}
+  　 default:
+        return state
+    }
+}
+
+// store
+const myStore = createStore(counter);
+
+// 状態変更を監視してコンソールに出力
+myStore.subscribe(() => console.log(myStore.getState()))
+
 // アプリケーションをコントロールするモジュール
 const app = electron.app;
 
@@ -51,7 +71,7 @@ const createMainWindow = (auth) => {
     // メインウィンドウの読み込み完了後の処理
     mainWindow.webContents.on("dom-ready", () => {
         initMain();
-        mainWindow.webContents.send('render', {});
+        render();
     });
 };
 
@@ -165,6 +185,10 @@ const initAuth = () => {
     });
 }
 
+const render = () => {
+  mainWindow.webContents.send("render", myStore.getState())
+};
+
 //OAuth認証関係のスクリプト
 async function reauthorize(oauth, saved_tokens) {
     oauth.setCredentials({
@@ -245,7 +269,7 @@ const afterAuthCallback = () => {
       if (authWindow) {
           authWindow.close();
       }
-      mainWindow.webContents.send('render', {});
+      render();
     }, 500)
 };
 
@@ -280,4 +304,10 @@ ipcMain.on('auth-window-input-token', (event, token) => {
       .catch((err) => {
           console.log(err);
       });
+});
+
+ipcMain.on("dispatch-store", (sender, e) => {
+  console.log( e );
+  myStore.dispatch(e);
+  render();
 });
