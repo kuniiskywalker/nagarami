@@ -1,19 +1,18 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { applyMiddleware, createStore } from 'redux';
 import todoApp from './reducers'
-import * as actions from './actions'
+import { loadChannels } from './actions'
 import App from './components/App'
 
-// import electron from 'electron'
-
-// reducer
-// import rootReducer from './reducers/index.js'
+import createIpc, { send } from 'redux-electron-ipc';
 
 // store
-const initialState = {};
-const store = createStore(todoApp, initialState);
+const ipc = createIpc({
+  'load-channels': loadChannels
+});
+const store = createStore(todoApp, applyMiddleware(ipc));
 
 // 状態変更を監視してコンソールに出力
 store.subscribe(() => console.log(store.getState()))

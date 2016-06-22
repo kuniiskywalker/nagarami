@@ -1,11 +1,10 @@
-const channels = (state = {count: 0}, action) => {
+const channels = (state = [], action) => {
     const { channels } = action;
-    switch(action.type) {
-  　 case 'FETCH_CHANNELS':
-      return channels
-  　 default:
-        return state
+    switch (action.type) {
+        case 'LOAD_CHANNEL':
+            return channels
+        default:
+            return state
     }
 }
-
 export default channels

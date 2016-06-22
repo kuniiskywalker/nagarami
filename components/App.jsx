@@ -1,12 +1,9 @@
 import React from 'react'
-import VisibleTodoList from '../containers/VisibleTodoList'
-
-import AddTodo from '../containers/AddTodo'
+import VisibleChannelList from '../containers/VisibleChannelList'
 
 const App = () => (
-<div>
-<AddTodo />
-<VisibleTodoList />
-</div>
+    <div>
+        <VisibleChannelList />
+    </div>
 )
 export default App

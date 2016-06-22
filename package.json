@@ -30,6 +30,7 @@
     "react-dom": "^0.14.2",
     "react-redux": "^4.0.0",
     "redux": "^3.3.1",
+    "redux-electron-ipc": "^1.1.0",
     "youtube-api": "^2.0.2"
   },
   "devDependencies": {

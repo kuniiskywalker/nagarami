@@ -1,9 +1,3 @@
-export function addTodo(text) {
-　return { type: 'ADD_TODO', text }
-}
-export function completeTodo(id) {
-　return { type: 'COMPLETE_TODO', id }
-}
-export function setVisibilityFilter(filter) {
-　return
+export function loadChannels (event, channels) {
+  return { type: 'LOAD_CHANNEL', channels }
 }
