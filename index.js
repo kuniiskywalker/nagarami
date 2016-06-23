@@ -289,3 +289,13 @@ ipcMain.on('fetch-channels', (event, ...args) => {
         event.sender.send('load-channels', result.items);
     });
 });
+ipcMain.on('fetch-videos', (event, channelId) => {
+    youtube.search.list({
+        part: 'snippet',
+        channelId: channelId,
+        maxResults: 50,
+        key: apikey
+    }, function (a, result, response) {
+        event.sender.send('load-videos', result.items);
+    });
+});

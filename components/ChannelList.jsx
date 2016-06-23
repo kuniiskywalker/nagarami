@@ -1,26 +1,24 @@
 import React, { PropTypes } from 'react'
-import createIpc, { send } from 'redux-electron-ipc';
+//import createIpc, { send } from 'redux-electron-ipc';
+import Channel from './Channel'
 
-class ChannelList extends React.Component {
-    componentDidMount() {
-        const { dispatch } = this.props
-        dispatch(send('fetch-channels'));
-    }
-    render() {
-        const { channels } = this.props
-        return (
-            <ul>
-            {channels.map((channel, i) =>
-                <li key={i}>
-                <img src={channel.thumbnails.default.url} />
-                </li>
-            )}
-            </ul>
-        )
-    }
-}
+const ChannelList = ({ channels, onChannelClick }) => (
+    <ul>
+    {channels.map((channel, i) =>
+            <Channel
+                key={channel.id}
+        {...channel}
+                onClick={() => onChannelClick(channel.id)}
+            />
+    )}
+    </ul>
+)
 
 ChannelList.propTypes = {
-    channels: PropTypes.array.isRequired
+    channels: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        thumbnail: PropTypes.string.isRequired
+    }).isRequired).isRequired,
+    onChannelClick: PropTypes.func.isRequired
 }
 export default ChannelList
