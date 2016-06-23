@@ -25,8 +25,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onVideoClick: (id) => {
-            dispatch(playVideo(id));
+        onVideoClick: (video) => {
+            dispatch(playVideo(video));
         }
     }
 }

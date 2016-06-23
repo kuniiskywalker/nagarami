@@ -7,7 +7,7 @@ const VideoList = ({ videos, onVideoClick }) => (
             <Video
                 key={video.id}
         {...video}
-                onClick={() => onVideoClick(video.id)}
+                onClick={() => onVideoClick(video)}
             />
     )}
     </ul>
