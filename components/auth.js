@@ -19,8 +19,8 @@ var ipcRenderer = require('electron').ipcRenderer;
         alert(arg);
     });
 
-    // メインプロセスに引数を送信
-    ipcRenderer.send('load');
+    // // メインプロセスに引数を送信
+    // ipcRenderer.send('auth-window-load');
 })();
 
 function gcodeinput() {
@@ -32,5 +32,5 @@ function gcodeinput() {
     }
 
     // メインプロセスに引数を送信
-    ipcRenderer.send('auth', values);
+    ipcRenderer.send('auth-window-input-token', values);
 }

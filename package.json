@@ -2,13 +2,16 @@
   "name": "electron-boilerplate",
   "version": "1.0.0",
   "description": "electron app",
-  "main": "index.js",
+  "main": "bootstrapper.js",
   "author": "glassonion1",
   "npmName": "electron-react-redux-boilerplate",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/glassonion1/electron-react-redux-boilerplate.git"
+  },
+  "scripts": {
+    "start": "electron ."
   },
   "keywords": [
     "electron",
@@ -18,21 +21,22 @@
     "boilerplate"
   ],
   "dependencies": {
-    "babel-core": "^6.6.5",
     "babel-polyfill": "^6.9.1",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-3": "^6.5.0",
-    "electron-prebuilt": "^0.31.0",
+    "babel-register": "^6.9.0",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "react-redux": "^4.0.0",
     "redux": "^3.3.1",
+    "redux-electron-ipc": "^1.1.0",
     "youtube-api": "^2.0.2"
   },
   "devDependencies": {
     "react": "^0.14.2",
     "react-redux": "^4.0.0",
-    "redux": "^3.3.1"
+    "redux": "^3.3.1",
+    "electron-prebuilt": "^0.36.0"
   }
 }
