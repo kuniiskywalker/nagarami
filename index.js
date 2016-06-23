@@ -51,6 +51,7 @@ const createMainWindow = (auth) => {
     mainWindow.webContents.on("dom-ready", () => {
         initMain();
     });
+    mainWindow.setAlwaysOnTop(true);
 };
 
 // 認証用ウィンドウ表示処理
