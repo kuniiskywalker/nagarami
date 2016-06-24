@@ -43,16 +43,28 @@ let authWindow;
 let controllerWindow;
 
 // プレイヤーウィンドウ表示処理
-const createPlayerWindow = (auth) => {
-    playerWindow = new BrowserWindow({width: 800, height: 600});
+const createPlayerWindow = (callback) => {
+    if (playerWindow != null) {
+        callback();
+        return;
+    }
+    const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+    const windowWidth = 400;
+    const windowHeight = 300;
+
+    playerWindow = new BrowserWindow({
+        width: windowWidth,
+        height: windowHeight,
+        x: width - windowWidth,
+        y: height - windowHeight,
+        frame: false
+    });
     playerWindow.loadURL('file://' + __dirname + '/player.html');
-    playerWindow.openDevTools();
     playerWindow.on('closed', () => {
         playerWindow = null;
     });
-    // メインウィンドウの読み込み完了後の処理
     playerWindow.webContents.on("dom-ready", () => {
-        initMain();
+        callback();
     });
     playerWindow.setAlwaysOnTop(true);
 };
@@ -81,9 +93,12 @@ const createControllerWindow = () => {
     controllerWindow.loadURL('file://' + __dirname + '/controller.html');
     controllerWindow.openDevTools();
     controllerWindow.on('closed', () => {
-        controllerWindow = null;
+        app.quit();
     });
-    playerWindow.setAlwaysOnTop(true);
+    controllerWindow.webContents.on("dom-ready", () => {
+        initMain();
+    });
+    controllerWindow.setAlwaysOnTop(true);
 };
 
 // 保存したtoken情報を取得
@@ -265,7 +280,7 @@ const afterAuthCallback = () => {
 
 // 起動時に呼ばれるイベント
 app.on('ready', () => {
-    createPlayerWindow();
+    createControllerWindow();
 });
 
 // ウィンドウを閉じた時のイベント
@@ -277,7 +292,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
     if (mainWindow === null) {
-        createPlayerWindow();
+        createControllerWindow();
     }
 });
 
@@ -297,9 +312,6 @@ ipcMain.on('auth-window-input-token', (event, token) => {
 });
 
 // Actions
-ipcMain.on('open-controller', (event) => {
-    createControllerWindow();
-});
 ipcMain.on('fetch-channels', (event, ...args) => {
     youtube.subscriptions.list({
         part: 'snippet',
@@ -314,6 +326,7 @@ ipcMain.on('fetch-videos', (event, channelId) => {
     youtube.search.list({
         part: 'snippet',
         channelId: channelId,
+        order: 'date',
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
@@ -324,6 +337,7 @@ ipcMain.on('search-videos', (event, q) => {
     youtube.search.list({
         part: 'snippet',
         q: q,
+        order: 'date',
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
@@ -331,5 +345,7 @@ ipcMain.on('search-videos', (event, q) => {
     });
 });
 ipcMain.on('select-video', (event, video) => {
-    playerWindow.send('play-video', video);
+    createPlayerWindow(() => {
+        playerWindow.send('play-video', video);
+    });
 });

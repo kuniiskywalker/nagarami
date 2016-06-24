@@ -2,8 +2,8 @@ import React, { PropTypes } from 'react'
 import YouTube from 'react-youtube'
 
 const opts = {
-    height: '390',
-    width: '640',
+    width: '400',
+    height: '300',
     playerVars: {
         autoplay: 1,
         rel: 0
