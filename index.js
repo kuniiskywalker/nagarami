@@ -33,25 +33,28 @@ let TOKEN_PATH = './config/script-nodejs-quickstart.json';
 
 const apikey = fs.readFileSync(APIKEY_PATH, "utf-8");
 
-// メインウィンドウ
-let mainWindow;
+// プレイヤーウィンドウ
+let playerWindow;
 
 // 認証用ウィンドウ
 let authWindow;
 
-// メインウィンドウ表示処理
-const createMainWindow = (auth) => {
-    mainWindow = new BrowserWindow({width: 800, height: 600});
-    mainWindow.loadURL('file://' + __dirname + '/index.html');
-    mainWindow.openDevTools();
-    mainWindow.on('closed', () => {
-        mainWindow = null;
+// コントローラーウィンドウ
+let controllerWindow;
+
+// プレイヤーウィンドウ表示処理
+const createPlayerWindow = (auth) => {
+    playerWindow = new BrowserWindow({width: 800, height: 600});
+    playerWindow.loadURL('file://' + __dirname + '/player.html');
+    playerWindow.openDevTools();
+    playerWindow.on('closed', () => {
+        playerWindow = null;
     });
     // メインウィンドウの読み込み完了後の処理
-    mainWindow.webContents.on("dom-ready", () => {
+    playerWindow.webContents.on("dom-ready", () => {
         initMain();
     });
-    mainWindow.setAlwaysOnTop(true);
+    playerWindow.setAlwaysOnTop(true);
 };
 
 // 認証用ウィンドウ表示処理
@@ -67,6 +70,17 @@ const createAuthWindow = (authUrl) => {
         initAuth();
         authWindow.webContents.send('async-url', authUrl);
     });
+};
+
+// コントローラーウィンドウ表示処理
+const createControllerWindow = () => {
+    controllerWindow = new BrowserWindow({width: 800, height: 600});
+    controllerWindow.loadURL('file://' + __dirname + '/controller.html');
+    controllerWindow.openDevTools();
+    controllerWindow.on('closed', () => {
+        controllerWindow = null;
+    });
+    playerWindow.setAlwaysOnTop(true);
 };
 
 // 保存したtoken情報を取得
@@ -248,7 +262,7 @@ const afterAuthCallback = () => {
 
 // 起動時に呼ばれるイベント
 app.on('ready', () => {
-    createMainWindow();
+    createPlayerWindow();
 });
 
 // ウィンドウを閉じた時のイベント
@@ -260,7 +274,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
     if (mainWindow === null) {
-        createMainWindow();
+        createPlayerWindow();
     }
 });
 
@@ -280,6 +294,9 @@ ipcMain.on('auth-window-input-token', (event, token) => {
 });
 
 // Actions
+ipcMain.on('open-controller', (event) => {
+    createControllerWindow();
+});
 ipcMain.on('fetch-channels', (event, ...args) => {
     youtube.subscriptions.list({
         part: 'snippet',
@@ -299,4 +316,17 @@ ipcMain.on('fetch-videos', (event, channelId) => {
     }, function (a, result, response) {
         event.sender.send('load-videos', result.items);
     });
+});
+ipcMain.on('search-videos', (event, q) => {
+    youtube.search.list({
+        part: 'snippet',
+        q: q,
+        maxResults: 50,
+        key: apikey
+    }, function (a, result, response) {
+        event.sender.send('load-videos', result.items);
+    });
+});
+ipcMain.on('select-video', (event, video) => {
+    playerWindow.send('play-video', video);
 });

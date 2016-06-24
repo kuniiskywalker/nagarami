@@ -1,13 +1,13 @@
 import React from 'react'
-import VisiblePlayer from '../containers/VisiblePlayer'
+import SearchVideo from '../containers/SearchVideo'
 import VisibleChannelList from '../containers/VisibleChannelList'
 import VisibleVideoList from '../containers/VisibleVideoList'
 
-const App = () => (
+const ControllerApp = () => (
     <div>
-        <VisiblePlayer />
+        <SearchVideo />
         <VisibleChannelList />
         <VisibleVideoList />
     </div>
 )
-export default App
+export default ControllerApp
