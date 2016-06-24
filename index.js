@@ -74,6 +74,9 @@ const createAuthWindow = (authUrl) => {
 
 // コントローラーウィンドウ表示処理
 const createControllerWindow = () => {
+    if (controllerWindow != null) {
+        return;
+    }
     controllerWindow = new BrowserWindow({width: 800, height: 600});
     controllerWindow.loadURL('file://' + __dirname + '/controller.html');
     controllerWindow.openDevTools();
