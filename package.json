@@ -11,7 +11,8 @@
     "url": "https://github.com/glassonion1/electron-react-redux-boilerplate.git"
   },
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-packager . nagarami --platform=darwin,win32 --arch=x64 --version=1.2.2"
   },
   "keywords": [
     "electron",

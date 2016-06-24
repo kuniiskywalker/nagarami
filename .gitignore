@@ -36,13 +36,13 @@ node_modules
 .node_repl_history
 
 # Authenticated file
-script-nodejs-quickstart.json
+.credentials/script-nodejs-quickstart.json
 
 # Credentials file
-client_secret.json
+.credentials/client_secret.json
 
 # Intellij project folder
 .idea
 
 # API KEY file
-apikey
+.credentials/apikey

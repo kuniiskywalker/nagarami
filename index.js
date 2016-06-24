@@ -23,13 +23,13 @@ let SCOPES = [
 ];
 
 // API KEY
-let APIKEY_PATH = './config/apikey';
+let APIKEY_PATH = __dirname + '/.credentials/apikey';
 
 // OAuth 2.0 クライアント ID
-let CREDENTIALS_PATH = './config/client_secret.json';
+let CREDENTIALS_PATH = __dirname + '/.credentials/client_secret.json';
 
 // 取得したトークンの保存先
-let TOKEN_PATH = './config/script-nodejs-quickstart.json';
+let TOKEN_PATH = __dirname + '/.credentials/script-nodejs-quickstart.json';
 
 const apikey = fs.readFileSync(APIKEY_PATH, "utf-8");
 
@@ -98,7 +98,6 @@ const createControllerWindow = () => {
     controllerWindow.webContents.on("dom-ready", () => {
         initMain();
     });
-    controllerWindow.setAlwaysOnTop(true);
 };
 
 // 保存したtoken情報を取得
