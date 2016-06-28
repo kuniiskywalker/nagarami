@@ -4,9 +4,11 @@ import { Provider } from 'react-redux'
 import { applyMiddleware, createStore } from 'redux';
 import todoApp from './reducers'
 import { loadChannels, loadVideos } from './actions'
-import ControllerApp from './components/ControllerApp'
 
 import createIpc, { send } from 'redux-electron-ipc';
+
+import { Router, hashHistory } from 'react-router';
+import routes from './routes';
 
 // store
 const ipc = createIpc({
@@ -20,7 +22,9 @@ store.subscribe(() => console.log(store.getState()))
 
 render(
   <Provider store={store}>
-    <ControllerApp />
+    <Router history={hashHistory}>
+      {routes}
+    </Router>
   </Provider>,
   document.getElementById('root')
 );
