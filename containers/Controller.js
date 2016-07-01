@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react'
-import SearchVideo from '../containers/SearchVideo'
+//import SearchVideo from '../containers/SearchVideo'
 import Naviagtion from './Naviagtion'
 
 const Controller = ({ children }) => (
     <div>
-        <SearchVideo />
+        <Naviagtion />
         {children}
         <Naviagtion />
     </div>

@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
-//import { playVideo } from '../actions'
 import VideoList from '../components/VideoList'
 import createIpc, { send } from 'redux-electron-ipc';
 
 function getVisibleTodos(videos, filter) {
+    
     switch (filter) {
         case 'SHOW_ALL':
             return videos.map((video, i) => {
@@ -28,7 +28,6 @@ const mapDispatchToProps = (dispatch) => {
     return {
         onVideoClick: (video) => {
             dispatch(send('select-video', video));
-            //dispatch(playVideo(video));
         }
     }
 }

@@ -311,14 +311,14 @@ ipcMain.on('auth-window-input-token', (event, token) => {
 });
 
 // Actions
-ipcMain.on('fetch-channels', (event, ...args) => {
+ipcMain.on('fetch-subscriptions', (event, ...args) => {
     youtube.subscriptions.list({
         part: 'snippet',
         mine: true,
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
-        event.sender.send('load-channel', result.items);
+        event.sender.send('load-subscription', result.items);
     });
 });
 ipcMain.on('fetch-videos', (event, channelId) => {
@@ -330,6 +330,18 @@ ipcMain.on('fetch-videos', (event, channelId) => {
         key: apikey
     }, function (a, result, response) {
         event.sender.send('load-video', result.items);
+    });
+});
+ipcMain.on('search-channel', (event, q) => {
+    youtube.search.list({
+        part: 'snippet',
+        q: q,
+        type: 'channel',
+        order: 'date',
+        maxResults: 50,
+        key: apikey
+    }, function (a, result, response) {
+        event.sender.send('load-channel', result.items);
     });
 });
 ipcMain.on('search-video', (event, q) => {
@@ -344,30 +356,18 @@ ipcMain.on('search-video', (event, q) => {
         event.sender.send('load-video', result.items);
     });
 });
-//ipcMain.on('search-playlist', (event, q) => {
-//    youtube.search.list({
-//        part: 'snippet',
-//        q: q,
-//        type: 'playlist',
-//        order: 'date',
-//        maxResults: 50,
-//        key: apikey
-//    }, function (a, result, response) {
-//        event.sender.send('load-videos', result.items);
-//    });
-//});
-//ipcMain.on('search-channel', (event, q) => {
-//    youtube.search.list({
-//        part: 'snippet',
-//        q: q,
-//        type: 'channel',
-//        order: 'date',
-//        maxResults: 50,
-//        key: apikey
-//    }, function (a, result, response) {
-//        event.sender.send('load-videos', result.items);
-//    });
-//});
+ipcMain.on('search-playlist', (event, q) => {
+    youtube.search.list({
+        part: 'snippet',
+        q: q,
+        type: 'playlist',
+        order: 'date',
+        maxResults: 50,
+        key: apikey
+    }, function (a, result, response) {
+        event.sender.send('load-playlist', result.items);
+    });
+});
 ipcMain.on('select-video', (event, video) => {
     createPlayerWindow(() => {
         playerWindow.send('play-video', video);

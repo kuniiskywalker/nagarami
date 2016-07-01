@@ -6,18 +6,24 @@ function getVisibleTodos(channels, filter) {
     switch (filter) {
         case 'SHOW_ALL':
             return channels.map((channel, i) => {
-                const value = channel.snippet;
                 return {
-                    id: value.resourceId.channelId,
-                    thumbnail: value.thumbnails.default.url
+                    id: channel.snippet.channelId,
+                    title: channel.snippet.channelTitle,
+                    thumbnail: channel.snippet.thumbnails.default.url
                 }
             }).filter((element) => {
                 return element.id != ""
             })
-        case 'SHOW_COMPLETED':
-            return channels.filter(channel => channel.completed)
-        case 'SHOW_ACTIVE':
-            return channels.filter(channel => !channel.completed)
+        //case 'SHOW_ALL':
+        //    return channels.map((channel, i) => {
+        //        const value = channel.snippet;
+        //        return {
+        //            id: value.resourceId.channelId,
+        //            thumbnail: value.thumbnails.default.url
+        //        }
+        //    }).filter((element) => {
+        //        return element.id != ""
+        //    })
     }
 }
 
@@ -29,7 +35,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
 
-    dispatch(send('fetch-channels'));
+    //dispatch(send('fetch-subscriptions'));
     
     return {
         onChannelClick: (id) => {
