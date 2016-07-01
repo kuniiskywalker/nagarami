@@ -3,7 +3,7 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { applyMiddleware, createStore } from 'redux';
 import todoApp from './reducers'
-import { loadChannels, loadVideos } from './actions'
+import { loadChannel, loadVideo } from './actions'
 
 import createIpc, { send } from 'redux-electron-ipc';
 
@@ -12,8 +12,8 @@ import routes from './routes';
 
 // store
 const ipc = createIpc({
-  'load-channels': loadChannels,
-  'load-videos': loadVideos
+  'load-channel': loadChannel,
+  'load-video': loadVideo
 });
 const store = createStore(todoApp, applyMiddleware(ipc));
 

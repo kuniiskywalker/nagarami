@@ -6,7 +6,7 @@ let SearchVideo = ({dispatch}) => {
     let input
     const onSubmit = (e) => {
         e.preventDefault()
-        dispatch(send('search-videos', input.value));
+        dispatch(send('search-video', input.value));
     }
 
     return (

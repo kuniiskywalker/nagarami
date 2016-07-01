@@ -318,7 +318,7 @@ ipcMain.on('fetch-channels', (event, ...args) => {
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
-        event.sender.send('load-channels', result.items);
+        event.sender.send('load-channel', result.items);
     });
 });
 ipcMain.on('fetch-videos', (event, channelId) => {
@@ -329,20 +329,45 @@ ipcMain.on('fetch-videos', (event, channelId) => {
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
-        event.sender.send('load-videos', result.items);
+        event.sender.send('load-video', result.items);
     });
 });
-ipcMain.on('search-videos', (event, q) => {
+ipcMain.on('search-video', (event, q) => {
     youtube.search.list({
         part: 'snippet',
         q: q,
+        type: 'video',
         order: 'date',
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
-        event.sender.send('load-videos', result.items);
+        event.sender.send('load-video', result.items);
     });
 });
+//ipcMain.on('search-playlist', (event, q) => {
+//    youtube.search.list({
+//        part: 'snippet',
+//        q: q,
+//        type: 'playlist',
+//        order: 'date',
+//        maxResults: 50,
+//        key: apikey
+//    }, function (a, result, response) {
+//        event.sender.send('load-videos', result.items);
+//    });
+//});
+//ipcMain.on('search-channel', (event, q) => {
+//    youtube.search.list({
+//        part: 'snippet',
+//        q: q,
+//        type: 'channel',
+//        order: 'date',
+//        maxResults: 50,
+//        key: apikey
+//    }, function (a, result, response) {
+//        event.sender.send('load-videos', result.items);
+//    });
+//});
 ipcMain.on('select-video', (event, video) => {
     createPlayerWindow(() => {
         playerWindow.send('play-video', video);
