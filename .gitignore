@@ -46,3 +46,6 @@ node_modules
 
 # API KEY file
 .credentials/apikey
+
+# Build file
+dist/

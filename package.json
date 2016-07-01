@@ -1,18 +1,18 @@
 {
-  "name": "electron-boilerplate",
+  "name": "nagarami",
   "version": "1.0.0",
   "description": "electron app",
   "main": "bootstrapper.js",
   "author": "glassonion1",
-  "npmName": "electron-react-redux-boilerplate",
+  "npmName": "nagarami",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/glassonion1/electron-react-redux-boilerplate.git"
+    "url": "git@bitbucket.org:k-family/nagarami-desktop.git"
   },
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager . nagarami --platform=darwin,win32 --arch=x64 --version=1.2.2"
+    "build": "node build.js"
   },
   "keywords": [
     "electron",
@@ -36,9 +36,10 @@
     "youtube-api": "^2.0.2"
   },
   "devDependencies": {
+    "electron-packager": "^7.1.0",
+    "electron-prebuilt": "^0.36.0",
     "react": "^0.14.2",
     "react-redux": "^4.0.0",
-    "redux": "^3.3.1",
-    "electron-prebuilt": "^0.36.0"
+    "redux": "^3.3.1"
   }
 }
