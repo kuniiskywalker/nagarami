@@ -4,6 +4,7 @@
 import fs from 'fs'
 import youtube from 'youtube-api'
 import electron from 'electron'
+import storage from 'electron-json-storage'
 
 // アプリケーションをコントロールするモジュール
 const app = electron.app;
@@ -103,128 +104,189 @@ const createControllerWindow = () => {
 // 保存したtoken情報を取得
 const getSavedToken = () => {
     return new Promise((resolve, reject) => {
-        fs.readFile(TOKEN_PATH, 'utf-8', (err, text) => {
-            if (err) {
-                reject(err);
+        storage.get('token', function(error, data) {
+            if (error) {
+                reject(error);
                 return;
-            } else {
-                const saved_tokens = JSON.parse(text);
-                resolve(saved_tokens);
             }
+            const saved_tokens = data;
+            resolve(saved_tokens);
+        });
+    });
+};
+
+// アクセストークンを保存する
+const storeToken = (token) => {
+    return new Promise((resolve, reject) => {
+        storage.set('token', token, function(error) {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve();
         });
     });
 };
 
 //OAuth認証関係のスクリプト
-function authorize(credentials) {
-    let oauth = youtube.authenticate({
-        type: "oauth",
-        client_id: credentials.installed.client_id,
-        client_secret: credentials.installed.client_secret,
-        redirect_url: credentials.installed.redirect_uris[0]
-    });
-    let authUrl = oauth.generateAuthUrl({
-        access_type: 'offline',
-        scope: SCOPES
-    });
-    return new Promise((resolve, reject) => {
-        getSavedToken()
-            .then((saved_tokens) => {
-                oauth.setCredentials({
-                    access_token: saved_tokens.access_token,
-                    refresh_token: saved_tokens.refresh_token,
-                });
-                resolve(oauth);
-            })
-            .catch((err) => {
-                reject(authUrl, err);
-                return;
-            });
-    });
+async function authorize() {
+
+    try {
+
+        // 認証ファイル情報取得
+        const credentials = await getCredentials();
+
+        let oauth = youtube.authenticate({
+            type: "oauth",
+            client_id: credentials.installed.client_id,
+            client_secret: credentials.installed.client_secret,
+            redirect_url: credentials.installed.redirect_uris[0]
+        });
+        
+        return oauth;
+        
+    } catch(error) {
+        throw error;
+    }
 };
 
 // トークン取得関数
-const newauthorize = (credentials, token, callback) => {
-    let oauth = youtube.authenticate({
-        type: "oauth",
-        client_id: credentials.installed.client_id,
-        client_secret: credentials.installed.client_secret,
-        redirect_url: credentials.installed.redirect_uris[0]
-    });
-    oauth.getToken(token, (err, token_info) => {
-        if (err) {
-            authWindow.webContents.send('message', "アクセストークンファイルが開けません");
-            return;
-        }
+async function newauthorize(token) {
+
+    try {
+        // 認証ファイル情報取得
+        const credentials = await getCredentials();
+
+        let oauth = youtube.authenticate({
+            type: "oauth",
+            client_id: credentials.installed.client_id,
+            client_secret: credentials.installed.client_secret,
+            redirect_url: credentials.installed.redirect_uris[0]
+        });
+
+        const token_info = await getToken(oauth, token);
+        
         oauth.setCredentials({
             access_token: token_info.access_token,
-            refresh_token: token_info.refresh_token,
+            refresh_token: token_info.refresh_token
         });
         youtube.authenticate({
             type: "key",
-            key: oauth,
+            key: oauth
         });
+
         // save token
-        storeToken(token_info);
-        callback();
-    });
+        await storeToken(token_info);
+        
+    } catch (error) {
+        console.log(error);
+        authWindow.webContents.send('message', "アクセストークンファイルが開けません");
+        return;
+    }
 };
 
-// メインウィンドウの初期処理
-const initMain = () => {
-    checkCredentialsFile()
-        .then((content) => {
-            return authorize(JSON.parse(content));
-        })
-        .then((oauth) => {
-            return reauthorize(oauth)
-                .then(() => {
-                    afterAuthCallback();
-                }, (e) => {
-                    console.log(e);
-                });
-        }, (authUrl, err) => {
-            createAuthWindow(authUrl);
+async function getToken(oauth, token){
+
+    return new Promise((resolve, reject) => {
+        oauth.getToken(token, (err, token_info) => {
+            if (err) {
+                reject("アクセストークンファイルが開けません");
+                return;
+            }
+            resolve(token_info);
         });
+    });
+}
+
+// メインウィンドウの初期処理
+async function initMain() {
+    
+    try {
+        
+        // 認証オブジェクト取得
+        const oauth = await authorize();
+
+        // 保存したトークンファイルを取得
+        const saved_tokens = await getSavedToken();
+        
+        console.log(saved_tokens);
+        
+        if (Object.keys(saved_tokens).length === 0) {
+
+            let authUrl = oauth.generateAuthUrl({
+                access_type: 'offline',
+                scope: SCOPES
+            });
+
+            createAuthWindow(authUrl);
+        } else {
+
+            // 認証用オブジェクトに取得したトークンをセット
+            oauth.setCredentials({
+                access_token: saved_tokens.access_token,
+                refresh_token: saved_tokens.refresh_token
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        return;
+    }
+
+    try {
+        
+        await reauthorize(oauth);
+        
+        afterAuthCallback();
+
+    } catch (error) {
+        
+        createAuthWindow(authUrl);
+    }
 };
 
 // 認証ウィンドウの初期処理
-const initAuth = () => {
-    checkCredentialsFile()
-        .then((content) => {
-            authorize(JSON.parse(content), () => {
-                afterAuthCallback();
-            });
-        })
-        .catch((err) => {
-            console.log(err);
+async function initAuth() {
+    
+    try {
+
+        const oauth = await authorize();
+
+        // 保存したトークンファイルを取得
+        const saved_tokens = await getSavedToken();
+
+        // 認証用オブジェクトに取得したトークンをセット
+        oauth.setCredentials({
+            access_token: saved_tokens.access_token,
+            refresh_token: saved_tokens.refresh_token
         });
+
+    } catch(error) {
+        console.log(error);
+    }
 };
 
 //OAuth認証関係のスクリプト
 async function reauthorize(oauth) {
-    // refresh token
-    const refresh_tokens = await refreshToken(oauth);
-
-    return new Promise((resolve, reject) => {
-        try {
-            // save token
-            storeToken(refresh_tokens);
-
-            // set refresh token
-            oauth.setCredentials({
-                access_token: refresh_tokens.access_token,
-                refresh_token: refresh_tokens.refresh_token,
-            });
-            youtube.authenticate({
-                type: "key",
-                key: oauth,
-            });
-            resolve();
-        } catch (e) {
-            reject(e);
-        }
-    });
+    
+    try {
+        // refresh token
+        const refresh_tokens = await refreshToken(oauth);
+        
+        // save token
+        await storeToken(refresh_tokens);
+        
+        // set refresh token
+        oauth.setCredentials({
+            access_token: refresh_tokens.access_token,
+            refresh_token: refresh_tokens.refresh_token,
+        });
+        youtube.authenticate({
+            type: "key",
+            key: oauth
+        });
+    } catch(error) {
+        console.log(error);
+    }
 };
 
 // refresh token
@@ -241,28 +303,15 @@ const refreshToken = (oauth) => {
     return promise;
 };
 
-// アクセストークンを保存する
-const storeToken = (token) => {
-    try {
-        //fs.mkdirSync(TOKEN_DIR);
-    } catch (err) {
-        if (err.code != 'EXIST') {
-            throw err;
-        }
-    }
-    fs.writeFile(TOKEN_PATH, JSON.stringify(token));
-    console.log('トークン保存場所：' + TOKEN_PATH);
-};
-
 // アプリケーション資格ファイルチェック
-const checkCredentialsFile = () => {
+const getCredentials = () => {
     return new Promise((resolve, reject) => {
         fs.readFile(CREDENTIALS_PATH, 'utf-8', (err, text) => {
             if (err) {
                 reject(err);
                 return;
             } else {
-                resolve(text);
+                resolve(JSON.parse(text));
             }
         });
     });
@@ -299,15 +348,16 @@ app.on('activate', () => {
 
 // 認証ウィンドウのトークン入力時のイベント
 ipcMain.on('auth-window-input-token', (event, token) => {
-    checkCredentialsFile()
-        .then((content) => {
-            newauthorize(JSON.parse(content), token, () => {
-                afterAuthCallback();
-            });
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+    
+    try {
+
+        newauthorize(token);
+
+        afterAuthCallback();
+        
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 // Actions
