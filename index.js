@@ -6,16 +6,17 @@ import youtube from 'youtube-api'
 import electron from 'electron'
 import storage from 'electron-json-storage'
 
-const {dialog} = require('electron');
+
+let {dialog} = require('electron');
 
 // アプリケーションをコントロールするモジュール
-const app = electron.app;
+let app = electron.app;
 
 // ウィンドウを作成するモジュール
-const BrowserWindow = electron.BrowserWindow;
+let BrowserWindow = electron.BrowserWindow;
 
 //Node.js側とHTML側で通信をするモジュール
-const ipcMain = electron.ipcMain;
+let ipcMain = electron.ipcMain;
 
 // スコープとアクセストークン関係
 let SCOPES = [
@@ -34,7 +35,7 @@ let CREDENTIALS_PATH = __dirname + '/.credentials/client_secret.json';
 // 取得したトークンの保存先
 let TOKEN_PATH = __dirname + '/.credentials/script-nodejs-quickstart.json';
 
-const apikey = fs.readFileSync(APIKEY_PATH, "utf-8");
+let apikey = fs.readFileSync(APIKEY_PATH, "utf-8");
 
 // プレイヤーウィンドウ
 let playerWindow;
@@ -46,14 +47,14 @@ let authWindow;
 let controllerWindow;
 
 // プレイヤーウィンドウ表示処理
-const createPlayerWindow = (callback) => {
+let createPlayerWindow = (callback) => {
     if (playerWindow != null) {
         callback();
         return;
     }
-    const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
-    const windowWidth = 420;
-    const windowHeight = 320;
+    let {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+    let windowWidth = 420;
+    let windowHeight = 320;
 
     playerWindow = new BrowserWindow({
         width: windowWidth,
@@ -73,7 +74,7 @@ const createPlayerWindow = (callback) => {
 };
 
 // 認証用ウィンドウ表示処理
-const createAuthWindow = (authUrl) => {
+let createAuthWindow = (authUrl) => {
     authWindow = new BrowserWindow({width: 800, height: 600});
     authWindow.loadURL('file://' + __dirname + '/auth.html');
     authWindow.openDevTools();
@@ -88,7 +89,7 @@ const createAuthWindow = (authUrl) => {
 };
 
 // コントローラーウィンドウ表示処理
-const createControllerWindow = (callback) => {
+let createControllerWindow = (callback) => {
     if (controllerWindow != null) {
         return;
     }
@@ -104,7 +105,7 @@ const createControllerWindow = (callback) => {
 };
 
 // 保存したtoken情報を取得
-const getSavedToken = () => {
+let getSavedToken = () => {
     return new Promise((resolve, reject) => {
         storage.get('token', function(error, data) {
             if (error) {
@@ -118,7 +119,7 @@ const getSavedToken = () => {
 };
 
 // アクセストークンを保存する
-const storeToken = (token) => {
+let storeToken = (token) => {
     return new Promise((resolve, reject) => {
         storage.set('token', token, function(error) {
             if (error) {
@@ -154,7 +155,7 @@ async function newauthorize(token) {
 
     try {
         // 認証ファイル情報取得
-        const credentials = await getCredentials();
+        let credentials = await getCredentials();
 
         let oauth = youtube.authenticate({
             type: "oauth",
@@ -163,7 +164,7 @@ async function newauthorize(token) {
             redirect_url: credentials.installed.redirect_uris[0]
         });
 
-        const token_info = await getToken(oauth, token);
+        let token_info = await getToken(oauth, token);
         
         oauth.setCredentials({
             access_token: token_info.access_token,
@@ -184,7 +185,7 @@ async function newauthorize(token) {
     }
 };
 
-const getToken = (oauth, token) => {
+let getToken = (oauth, token) => {
     return new Promise((resolve, reject) => {
         oauth.getToken(token, (err, token_info) => {
             if (err) {
@@ -197,7 +198,7 @@ const getToken = (oauth, token) => {
 };
 
 // refresh token
-const refreshToken = (oauth) => {
+let refreshToken = (oauth) => {
     var promise = new Promise((resolve, reject) => {
         oauth.refreshAccessToken((err, tokens) => {
             if (err) {
@@ -211,7 +212,7 @@ const refreshToken = (oauth) => {
 };
 
 // アプリケーション資格ファイルチェック
-const getCredentials = () => {
+let getCredentials = () => {
     return new Promise((resolve, reject) => {
         fs.readFile(CREDENTIALS_PATH, 'utf-8', (err, text) => {
             if (err) {
@@ -230,10 +231,10 @@ app.on('ready', async () => {
     try {
 
         // 認証オブジェクト取得
-        const oauth = await getOauth();
+        let oauth = await getOauth();
 
         // get saved token
-        const saved_tokens = await getSavedToken();
+        let saved_tokens = await getSavedToken();
 
         if (Object.keys(saved_tokens).length === 0) {
 
@@ -251,7 +252,7 @@ app.on('ready', async () => {
             });
 
             // トークンのリフレッシュ
-            const refresh = await refreshToken(oauth);
+            let refresh = await refreshToken(oauth);
 
             // 認証用オブジェクトにリフレッシュしたトークンをセット
             oauth.setCredentials({
@@ -301,9 +302,9 @@ ipcMain.on('auth-window-input-token', async (event, token) => {
     try {
 
         // 認証オブジェクト取得
-        const oauth = await getOauth();
+        let oauth = await getOauth();
 
-        const token_info = await getToken(oauth, token);
+        let token_info = await getToken(oauth, token);
 
         oauth.setCredentials({
             access_token: token_info.access_token,
