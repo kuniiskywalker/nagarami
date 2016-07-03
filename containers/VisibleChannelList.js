@@ -36,7 +36,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
 
     //dispatch(send('fetch-subscriptions'));
-    
+
     return {
         onChannelClick: (id) => {
             dispatch(send('fetch-videos', id));

@@ -6,6 +6,10 @@ import youtube from 'youtube-api'
 import electron from 'electron'
 import storage from 'electron-json-storage'
 
+import nodeStatic from 'node-static'
+import queryString from 'query-string'
+
+let file = new nodeStatic.Server(__dirname);
 
 let {dialog} = require('electron');
 
@@ -46,6 +50,13 @@ let authWindow;
 // コントローラーウィンドウ
 let controllerWindow;
 
+//
+require('http').createServer(function (request, response) {
+    request.addListener('end', function () {
+        file.serve(request, response);
+    }).resume();
+}).listen(7170);
+
 // プレイヤーウィンドウ表示処理
 let createPlayerWindow = (callback) => {
     if (playerWindow != null) {
@@ -63,7 +74,7 @@ let createPlayerWindow = (callback) => {
         y: height - windowHeight,
         frame: false
     });
-    playerWindow.loadURL('file://' + __dirname + '/player.html');
+    playerWindow.loadURL('http://localhost:7170/index.html');
     playerWindow.on('closed', () => {
         playerWindow = null;
     });
@@ -76,15 +87,44 @@ let createPlayerWindow = (callback) => {
 // 認証用ウィンドウ表示処理
 let createAuthWindow = (authUrl) => {
     authWindow = new BrowserWindow({width: 800, height: 600});
-    authWindow.loadURL('file://' + __dirname + '/auth.html');
+    authWindow.loadURL(authUrl);
     authWindow.openDevTools();
     authWindow.on('closed', () => {
         authWindow = null;
     });
     // 認証ウィンドウの読み込み完了後の処理
-    authWindow.webContents.on("dom-ready", () => {
-        //initAuth();
-        authWindow.webContents.send('async-url', authUrl);
+    authWindow.webContents.on("dom-ready", async (e) => {
+
+        try {
+
+            let url = authWindow.webContents.getURL();
+            let search = url.replace(/(.+?\?)(.+)/, "$2");
+            let parsed = queryString.parse(search);
+            let token = parsed["code"];
+
+            // 認証オブジェクト取得
+            let oauth = await getOauth();
+
+            let token_info = await getToken(oauth, token);
+
+            oauth.setCredentials({
+                access_token: token_info.access_token,
+                refresh_token: token_info.refresh_token
+            });
+            youtube.authenticate({
+                type: "key",
+                key: oauth
+            });
+
+            // save token
+            await storeToken(token_info);
+
+            authWindow.close();
+
+        } catch (error) {
+            console.log(error);
+        }
+
     });
 };
 
@@ -132,57 +172,21 @@ let storeToken = (token) => {
 };
 
 //OAuth認証関係のスクリプト
-
 let getOauth = () => {
     return new Promise((resolve, reject) => {
         getCredentials()
             .then((credentials) => {
                 let oauth = youtube.authenticate({
                     type: "oauth",
-                    client_id: credentials.installed.client_id,
-                    client_secret: credentials.installed.client_secret,
-                    redirect_url: credentials.installed.redirect_uris[0]
+                    client_id: credentials.web.client_id,
+                    client_secret: credentials.web.client_secret,
+                    redirect_url: credentials.web.redirect_uris[0]
                 });
                 resolve(oauth);
             }, (error) => {
                 reject(error);
             });
     });
-};
-
-// トークン取得関数
-async function newauthorize(token) {
-
-    try {
-        // 認証ファイル情報取得
-        let credentials = await getCredentials();
-
-        let oauth = youtube.authenticate({
-            type: "oauth",
-            client_id: credentials.installed.client_id,
-            client_secret: credentials.installed.client_secret,
-            redirect_url: credentials.installed.redirect_uris[0]
-        });
-
-        let token_info = await getToken(oauth, token);
-        
-        oauth.setCredentials({
-            access_token: token_info.access_token,
-            refresh_token: token_info.refresh_token
-        });
-        youtube.authenticate({
-            type: "key",
-            key: oauth
-        });
-
-        // save token
-        await storeToken(token_info);
-        
-    } catch (error) {
-        console.log(error);
-        authWindow.webContents.send('message', "アクセストークンファイルが開けません");
-        return;
-    }
 };
 
 let getToken = (oauth, token) => {
@@ -197,19 +201,19 @@ let getToken = (oauth, token) => {
     });
 };
 
-// refresh token
-let refreshToken = (oauth) => {
-    var promise = new Promise((resolve, reject) => {
-        oauth.refreshAccessToken((err, tokens) => {
-            if (err) {
-                return reject(err);
-            } else {
-                resolve(tokens);
-            }
-        });
-    });
-    return promise;
-};
+//// refresh token
+//let refreshToken = (oauth) => {
+//    var promise = new Promise((resolve, reject) => {
+//        oauth.refreshAccessToken((err, tokens) => {
+//            if (err) {
+//                return reject(err);
+//            } else {
+//                resolve(tokens);
+//            }
+//        });
+//    });
+//    return promise;
+//};
 
 // アプリケーション資格ファイルチェック
 let getCredentials = () => {
@@ -223,7 +227,15 @@ let getCredentials = () => {
             }
         });
     });
-}
+};
+
+// 認証用URL取得
+let getAuthUrl = (oauth) => {
+    return oauth.generateAuthUrl({
+        //access_type: 'offline',
+        scope: SCOPES
+    });
+};
 
 // 起動時に呼ばれるイベント
 app.on('ready', async () => {
@@ -238,41 +250,31 @@ app.on('ready', async () => {
 
         if (Object.keys(saved_tokens).length === 0) {
 
-            let authUrl = oauth.generateAuthUrl({
-                access_type: 'offline',
-                scope: SCOPES
-            });
-            createAuthWindow(authUrl);
+            createControllerWindow(() => {});
         } else {
 
             // 認証済トークンを認証用オブジェクトにセット
             oauth.setCredentials({
-                access_token: saved_tokens.access_token,
-                refresh_token: saved_tokens.refresh_token
+                access_token: saved_tokens.access_token
             });
 
-            // トークンのリフレッシュ
-            let refresh = await refreshToken(oauth);
-
-            // 認証用オブジェクトにリフレッシュしたトークンをセット
-            oauth.setCredentials({
-                access_token: refresh.access_token,
-                refresh_token: refresh.refresh_token
-            });
-
+            //// トークンのリフレッシュ
+            //let refresh = await refreshToken(oauth);
+            //
+            //// 認証用オブジェクトにリフレッシュしたトークンをセット
+            //oauth.setCredentials({
+            //    access_token: refresh.access_token
+            //});
+            //
             youtube.authenticate({
                 type: "key",
                 key: oauth
             });
+            //
+            //// save token
+            //await storeToken(refresh);
 
-            // save token
-            await storeToken(refresh);
-
-            createControllerWindow(() => {
-                if (authWindow != null) {
-                    authWindow.close();
-                }
-            });
+            createControllerWindow(() => {});
         }
 
     } catch(error) {
@@ -288,48 +290,28 @@ app.on('window-all-closed', () => {
     }
 });
 
-//app.on('activate', () => {
-//    if (mainWindow === null) {
-//        createControllerWindow();
-//    }
-//});
+app.on('activate', () => {
+    if (mainWindow != null) {
+    }
+});
 
 // 非同期プロセス通信
 
-// 認証ウィンドウのトークン入力時のイベント
-ipcMain.on('auth-window-input-token', async (event, token) => {
-    
+// Actions
+ipcMain.on('open-auth-page', async(event, ...args) => {
     try {
-
         // 認証オブジェクト取得
         let oauth = await getOauth();
 
-        let token_info = await getToken(oauth, token);
+        // 認証用URL取得
+        let authUrl = getAuthUrl(oauth);
 
-        oauth.setCredentials({
-            access_token: token_info.access_token,
-            refresh_token: token_info.refresh_token
-        });
-        youtube.authenticate({
-            type: "key",
-            key: oauth
-        });
-
-        // save token
-        await storeToken(token_info);
-
-        createControllerWindow(() => {
-            if (authWindow != null) {
-                authWindow.close();
-            }
-        });
-
-    } catch (error) {
+        createAuthWindow(authUrl);
+    } catch(error) {
         console.log(error);
     }
 });
 
-// Actions
 ipcMain.on('fetch-subscriptions', (event, ...args) => {
     youtube.subscriptions.list({
         part: 'snippet',

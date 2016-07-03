@@ -1,9 +1,12 @@
 import React, { PropTypes } from 'react'
-//import SearchVideo from '../containers/SearchVideo'
+import AuthUrl from './AuthUrl'
 import Naviagtion from './Naviagtion'
 
 const Controller = ({ children }) => (
     <div>
+        <div>
+            <AuthUrl />
+        </div>
         <Naviagtion />
         {children}
         <Naviagtion />
