@@ -74,7 +74,7 @@ let createPlayerWindow = (callback) => {
         y: height - windowHeight,
         frame: false
     });
-    playerWindow.loadURL('http://localhost:7170/index.html');
+    playerWindow.loadURL('file://' + __dirname + '/player.html');
     playerWindow.on('closed', () => {
         playerWindow = null;
     });
