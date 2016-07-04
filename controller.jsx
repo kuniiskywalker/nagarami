@@ -3,7 +3,7 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { applyMiddleware, createStore } from 'redux';
 import todoApp from './reducers'
-import { loadSubscription, loadChannel, loadPlaylist, loadVideo, loadVideoInPlaylist } from './actions'
+import { fetchSubscription, searchChannel, searchPlaylist, searchVideo } from './actions'
 
 import createIpc, { send } from 'redux-electron-ipc';
 
@@ -12,11 +12,10 @@ import routes from './routes';
 
 // store
 const ipc = createIpc({
-  'load-subscription': loadSubscription,
-  'load-channel': loadChannel,
-  'load-playlist': loadPlaylist,
-  'load-video': loadVideo,
-  'load-video-in-playlist': loadVideoInPlaylist
+  'fetch-subscriptions': fetchSubscription,
+  'search-channel': searchChannel,
+  'search-playlist': searchPlaylist,
+  'search-video': searchVideo
 });
 const store = createStore(todoApp, applyMiddleware(ipc));
 
@@ -24,10 +23,10 @@ const store = createStore(todoApp, applyMiddleware(ipc));
 store.subscribe(() => console.log(store.getState()))
 
 render(
-  <Provider store={store}>
-    <Router history={hashHistory}>
-      {routes}
-    </Router>
-  </Provider>,
-  document.getElementById('root')
+    <Provider store={store}>
+      <Router history={hashHistory}>
+        {routes}
+      </Router>
+    </Provider>,
+    document.getElementById('root')
 );

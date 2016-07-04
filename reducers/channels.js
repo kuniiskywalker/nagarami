@@ -1,7 +1,7 @@
 const channels = (state = [], action) => {
     const { channels } = action;
     switch (action.type) {
-        case 'LOAD_CHANNEL':
+        case 'SEARCH_CHANNEL':
             return channels
         default:
             return state

@@ -298,6 +298,7 @@ app.on('activate', () => {
 // 非同期プロセス通信
 
 // Actions
+
 ipcMain.on('open-auth-page', async(event, ...args) => {
     try {
         // 認証オブジェクト取得
@@ -319,18 +320,7 @@ ipcMain.on('fetch-subscriptions', (event, ...args) => {
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
-        event.sender.send('load-subscription', result.items);
-    });
-});
-ipcMain.on('fetch-videos', (event, channelId) => {
-    youtube.search.list({
-        part: 'snippet',
-        channelId: channelId,
-        order: 'date',
-        maxResults: 50,
-        key: apikey
-    }, function (a, result, response) {
-        event.sender.send('load-video', result.items);
+        event.sender.send('fetch-subscriptions', result.items);
     });
 });
 ipcMain.on('search-channel', (event, q) => {
@@ -342,7 +332,7 @@ ipcMain.on('search-channel', (event, q) => {
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
-        event.sender.send('load-channel', result.items);
+        event.sender.send('search-channel', result.items);
     });
 });
 ipcMain.on('search-video', (event, q) => {
@@ -354,7 +344,7 @@ ipcMain.on('search-video', (event, q) => {
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
-        event.sender.send('load-video', result.items);
+        event.sender.send('search-video', result.items);
     });
 });
 ipcMain.on('search-playlist', (event, q) => {
@@ -366,7 +356,7 @@ ipcMain.on('search-playlist', (event, q) => {
         maxResults: 50,
         key: apikey
     }, function (a, result, response) {
-        event.sender.send('load-playlist', result.items);
+        event.sender.send('search-playlist', result.items);
     });
 });
 ipcMain.on('select-video', (event, video) => {

@@ -1,14 +1,14 @@
-export function loadSubscription(event, subscriptions) {
-    return {type: 'LOAD_SUBSCRIPTION', subscriptions}
+export function fetchSubscription(event, subscriptions) {
+    return {type: 'FETCH_SUBSCRIPTION', subscriptions}
 }
-export function loadChannel(event, channels) {
-    return {type: 'LOAD_CHANNEL', channels}
+export function searchChannel(event, channels) {
+    return {type: 'SEARCH_CHANNEL', channels}
 }
-export function loadPlaylist(event, playlists) {
-    return {type: 'LOAD_PLAYLIST', playlists}
+export function searchPlaylist(event, playlists) {
+    return {type: 'SEARCH_PLAYLIST', playlists}
 }
-export function loadVideo(event, videos) {
-    return {type: 'LOAD_VIDEO', videos}
+export function searchVideo(event, videos) {
+    return {type: 'SEARCH_VIDEO', videos}
 }
 export function playVideo(event, video) {
     return {type: 'PLAY_VIDEO', player: {
