@@ -12,7 +12,12 @@ export function searchVideo(event, videos) {
 }
 export function playVideo(event, video) {
     return {type: 'PLAY_VIDEO', player: {
-        id: video.id,
-        title: video.title
+        id: video.id
     }}
+}
+export function showPlayer(event) {
+    return {type: 'SHOW_PLAYER'}
+}
+export function hidePlayer(event) {
+    return {type: 'HIDE_PLAYER'}
 }

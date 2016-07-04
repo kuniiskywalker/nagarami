@@ -298,6 +298,18 @@ app.on('activate', () => {
 // 非同期プロセス通信
 
 // Actions
+ipcMain.on('show-player', async(event, ...args) => {
+    if (playerWindow != null) {
+        playerWindow.show();
+        event.sender.send('show-player');
+    }
+});
+ipcMain.on('hide-player', async(event, ...args) => {
+    if (playerWindow != null) {
+        playerWindow.hide();
+        event.sender.send('hide-player');
+    }
+});
 
 ipcMain.on('open-auth-page', async(event, ...args) => {
     try {

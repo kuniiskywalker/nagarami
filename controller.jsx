@@ -3,7 +3,7 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { applyMiddleware, createStore } from 'redux';
 import todoApp from './reducers'
-import { fetchSubscription, searchChannel, searchPlaylist, searchVideo } from './actions'
+import { fetchSubscription, searchChannel, searchPlaylist, searchVideo, showPlayer, hidePlayer } from './actions'
 
 import createIpc, { send } from 'redux-electron-ipc';
 
@@ -15,7 +15,9 @@ const ipc = createIpc({
   'fetch-subscriptions': fetchSubscription,
   'search-channel': searchChannel,
   'search-playlist': searchPlaylist,
-  'search-video': searchVideo
+  'search-video': searchVideo,
+  'show-player': showPlayer,
+  'hide-player': hidePlayer
 });
 const store = createStore(todoApp, applyMiddleware(ipc));
 
