@@ -219,12 +219,24 @@ let getToken = (oauth, token) => {
 let getCredentials = () => {
     return new Promise((resolve, reject) => {
         fs.readFile(CREDENTIALS_PATH, 'utf-8', (err, text) => {
+
             if (err) {
                 reject(err);
                 return;
-            } else {
-                resolve(JSON.parse(text));
             }
+            
+            let credentials = JSON.parse(text);
+            
+            if (!credentials.web ||
+                !credentials.web.client_id ||
+                !credentials.web.client_secret ||
+                !credentials.web.redirect_uris[0])
+            {
+                reject("[no credential file]");
+                return;
+            }
+            
+            resolve(credentials);
         });
     });
 };
@@ -280,6 +292,7 @@ app.on('ready', async () => {
     } catch(error) {
         console.log( error );
         dialog.showErrorBox("application error", "Please notify the kuniiskywalker@gmail.com");
+        app.quit();
     }
 });
 
