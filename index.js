@@ -2,7 +2,7 @@
 
 //追加モジュールの宣言
 import fs from 'fs'
-import youtube from 'youtube-api'
+import apiClient from './utils/ApiClient'
 import electron from 'electron'
 import storage from 'electron-json-storage'
 
@@ -36,9 +36,6 @@ let APIKEY_PATH = __dirname + '/.credentials/apikey';
 // OAuth 2.0 クライアント ID
 let CREDENTIALS_PATH = __dirname + '/.credentials/client_secret.json';
 
-// 取得したトークンの保存先
-let TOKEN_PATH = __dirname + '/.credentials/script-nodejs-quickstart.json';
-
 let apikey = fs.readFileSync(APIKEY_PATH, "utf-8");
 
 // プレイヤーウィンドウ
@@ -49,6 +46,9 @@ let authWindow;
 
 // コントローラーウィンドウ
 let controllerWindow;
+
+// youtube apiクライアント
+let api;
 
 //
 require('http').createServer(function (request, response) {
@@ -103,18 +103,16 @@ let createAuthWindow = (authUrl) => {
             let token = parsed["code"];
 
             // 認証オブジェクト取得
-            let oauth = await getOauth();
-
-            let token_info = await getToken(oauth, token);
+            let oauth = api.oauth;
+            
+            //
+            let token_info = await api.getToken(token);
 
             oauth.setCredentials({
-                access_token: token_info.access_token,
-                refresh_token: token_info.refresh_token
+                access_token: token_info.access_token
             });
-            youtube.authenticate({
-                type: "key",
-                key: oauth
-            });
+            
+            api.setOauth(oauth);
 
             // save token
             await storeToken(token_info);
@@ -124,7 +122,6 @@ let createAuthWindow = (authUrl) => {
         } catch (error) {
             console.log(error);
         }
-
     });
 };
 
@@ -171,36 +168,6 @@ let storeToken = (token) => {
     });
 };
 
-//OAuth認証関係のスクリプト
-let getOauth = () => {
-    return new Promise((resolve, reject) => {
-        getCredentials()
-            .then((credentials) => {
-                let oauth = youtube.authenticate({
-                    type: "oauth",
-                    client_id: credentials.web.client_id,
-                    client_secret: credentials.web.client_secret,
-                    redirect_url: credentials.web.redirect_uris[0]
-                });
-                resolve(oauth);
-            }, (error) => {
-                reject(error);
-            });
-    });
-};
-
-let getToken = (oauth, token) => {
-    return new Promise((resolve, reject) => {
-        oauth.getToken(token, (err, token_info) => {
-            if (err) {
-                reject("アクセストークンファイルが開けません");
-                return;
-            }
-            resolve(token_info);
-        });
-    });
-};
-
 // アプリケーション資格ファイルチェック
 let getCredentials = () => {
     return new Promise((resolve, reject) => {
@@ -227,26 +194,22 @@ let getCredentials = () => {
     });
 };
 
-// 認証用URL取得
-let getAuthUrl = (oauth) => {
-    return oauth.generateAuthUrl({
-        //access_type: 'offline',
-        scope: SCOPES
-    });
-};
-
 // 起動時に呼ばれるイベント
 app.on('ready', async () => {
 
     try {
+        
+        let credentials = await getCredentials();
+        
+        api = new apiClient(credentials);
 
         // 認証オブジェクト取得
-        let oauth = await getOauth();
+        let oauth = api.oauth;
 
         // get saved token
         let saved_tokens = await getSavedToken();
 
-        if (Object.keys(saved_tokens).length === 0) {
+        if (Object.keys(saved_tokens).length === 0 && !saved_tokens.access_token) {
 
             createControllerWindow(() => {});
         } else {
@@ -255,11 +218,8 @@ app.on('ready', async () => {
             oauth.setCredentials({
                 access_token: saved_tokens.access_token
             });
-
-            youtube.authenticate({
-                type: "key",
-                key: oauth
-            });
+            
+            api.setOauth(oauth);
 
             createControllerWindow(() => {});
         }
@@ -300,13 +260,11 @@ ipcMain.on('hide-player', async(event, ...args) => {
     }
 });
 
-ipcMain.on('open-auth-page', async(event, ...args) => {
+ipcMain.on('open-auth-page', (event, ...args) => {
     try {
-        // 認証オブジェクト取得
-        let oauth = await getOauth();
 
         // 認証用URL取得
-        let authUrl = getAuthUrl(oauth);
+        let authUrl = api.getAuthUrl(SCOPES);
 
         createAuthWindow(authUrl);
     } catch(error) {
@@ -314,51 +272,50 @@ ipcMain.on('open-auth-page', async(event, ...args) => {
     }
 });
 
-ipcMain.on('fetch-subscriptions', (event, ...args) => {
-    youtube.subscriptions.list({
-        part: 'snippet',
-        mine: true,
-        maxResults: 50,
-        key: apikey
-    }, function (a, result, response) {
-        event.sender.send('fetch-subscriptions', result.items);
-    });
+ipcMain.on('fetch-subscriptions', async(event, ...args) => {
+    try {
+        
+        let subscriptions = api.fetchSubscriptions(apikey);
+        
+        event.sender.send('fetch-subscriptions', subscriptions);
+        
+    } catch (error) {
+        console.log(error);
+    }
 });
-ipcMain.on('search-channel', (event, q) => {
-    youtube.search.list({
-        part: 'snippet',
-        q: q,
-        type: 'channel',
-        order: 'date',
-        maxResults: 50,
-        key: apikey
-    }, function (a, result, response) {
-        event.sender.send('search-channel', result.items);
-    });
+ipcMain.on('search-channel', async(event, q) => {
+    
+    try {
+        
+        let channels = api.searchChannel(apikey, q);
+
+        event.sender.send('search-channel', channels);
+
+    } catch (error) {
+        console.log(error);
+    }
 });
-ipcMain.on('search-video', (event, q) => {
-    youtube.search.list({
-        part: 'snippet',
-        q: q,
-        type: 'video',
-        order: 'date',
-        maxResults: 50,
-        key: apikey
-    }, function (a, result, response) {
-        event.sender.send('search-video', result.items);
-    });
+ipcMain.on('search-video', async(event, q) => {
+    try {
+
+        let videos = await api.searchVideo(apikey, q);
+
+        event.sender.send('search-video', videos);
+
+    } catch (error) {
+        console.log(error);
+    }
 });
-ipcMain.on('search-playlist', (event, q) => {
-    youtube.search.list({
-        part: 'snippet',
-        q: q,
-        type: 'playlist',
-        order: 'date',
-        maxResults: 50,
-        key: apikey
-    }, function (a, result, response) {
-        event.sender.send('search-playlist', result.items);
-    });
+ipcMain.on('search-playlist', async(event, q) => {
+    try {
+
+        let playlist = api.searchPlaylist(apikey, q);
+
+        event.sender.send('search-playlist', playlist);
+
+    } catch (error) {
+        console.log(error);
+    }
 });
 ipcMain.on('select-video', (event, video) => {
     createPlayerWindow(() => {
