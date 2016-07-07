@@ -201,20 +201,6 @@ let getToken = (oauth, token) => {
     });
 };
 
-//// refresh token
-//let refreshToken = (oauth) => {
-//    var promise = new Promise((resolve, reject) => {
-//        oauth.refreshAccessToken((err, tokens) => {
-//            if (err) {
-//                return reject(err);
-//            } else {
-//                resolve(tokens);
-//            }
-//        });
-//    });
-//    return promise;
-//};
-
 // アプリケーション資格ファイルチェック
 let getCredentials = () => {
     return new Promise((resolve, reject) => {
@@ -270,21 +256,10 @@ app.on('ready', async () => {
                 access_token: saved_tokens.access_token
             });
 
-            //// トークンのリフレッシュ
-            //let refresh = await refreshToken(oauth);
-            //
-            //// 認証用オブジェクトにリフレッシュしたトークンをセット
-            //oauth.setCredentials({
-            //    access_token: refresh.access_token
-            //});
-            //
             youtube.authenticate({
                 type: "key",
                 key: oauth
             });
-            //
-            //// save token
-            //await storeToken(refresh);
 
             createControllerWindow(() => {});
         }
@@ -317,6 +292,7 @@ ipcMain.on('show-player', async(event, ...args) => {
         event.sender.send('show-player');
     }
 });
+
 ipcMain.on('hide-player', async(event, ...args) => {
     if (playerWindow != null) {
         playerWindow.hide();
