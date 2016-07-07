@@ -9,6 +9,7 @@ function ApiClient (credentials) {
     });
 }
 
+// 認証オブジェクトをセット
 ApiClient.prototype.setOauth = function(oauth) {
     this.oauth = oauth;
     youtube.authenticate({
@@ -17,7 +18,7 @@ ApiClient.prototype.setOauth = function(oauth) {
     });
 }
 
-//
+// トークン取得
 ApiClient.prototype.getToken = function(token) {
     return new Promise((resolve, reject) => {
         this.oauth.getToken(token, (err, token_info) => {
@@ -79,11 +80,6 @@ ApiClient.prototype.searchVideo = function(apikey, q) {
             maxResults: 50,
             key: apikey
         }, function (a, result, response) {
-            
-            
-            console.log(result);
-            console.log(response);
-
             resolve(result.items);
         });
     });

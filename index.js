@@ -85,7 +85,11 @@ let createPlayerWindow = (callback) => {
 };
 
 // 認証用ウィンドウ表示処理
-let createAuthWindow = (authUrl) => {
+let createAuthWindow = (callback) => {
+
+    // 認証用URL取得
+    let authUrl = api.getAuthUrl(SCOPES);
+    
     authWindow = new BrowserWindow({width: 800, height: 600});
     authWindow.loadURL(authUrl);
     authWindow.openDevTools();
@@ -93,35 +97,8 @@ let createAuthWindow = (authUrl) => {
         authWindow = null;
     });
     // 認証ウィンドウの読み込み完了後の処理
-    authWindow.webContents.on("dom-ready", async (e) => {
-
-        try {
-
-            let url = authWindow.webContents.getURL();
-            let search = url.replace(/(.+?\?)(.+)/, "$2");
-            let parsed = queryString.parse(search);
-            let token = parsed["code"];
-
-            // 認証オブジェクト取得
-            let oauth = api.oauth;
-            
-            //
-            let token_info = await api.getToken(token);
-
-            oauth.setCredentials({
-                access_token: token_info.access_token
-            });
-            
-            api.setOauth(oauth);
-
-            // save token
-            await storeToken(token_info);
-
-            authWindow.close();
-
-        } catch (error) {
-            console.log(error);
-        }
+    authWindow.webContents.on("dom-ready", (e) => {
+        callback();
     });
 };
 
@@ -198,7 +175,7 @@ let getCredentials = () => {
 app.on('ready', async () => {
 
     try {
-        
+
         let credentials = await getCredentials();
         
         api = new apiClient(credentials);
@@ -261,58 +238,65 @@ ipcMain.on('hide-player', async(event, ...args) => {
 });
 
 ipcMain.on('open-auth-page', (event, ...args) => {
-    try {
+    createAuthWindow(async() => {
+        try {
 
-        // 認証用URL取得
-        let authUrl = api.getAuthUrl(SCOPES);
+            // 認証後のコールバックURL GETパラーメータからtokenをとりだす
+            let url = authWindow.webContents.getURL();
+            let search = url.replace(/(.+?\?)(.+)/, "$2");
+            let parsed = queryString.parse(search);
+            let token = parsed["code"];
 
-        createAuthWindow(authUrl);
-    } catch(error) {
-        console.log(error);
-    }
+            // 認証オブジェクト取得
+            let oauth = api.oauth;
+
+            let token_info = await api.getToken(token);
+
+            oauth.setCredentials({
+                access_token: token_info.access_token
+            });
+
+            api.setOauth(oauth);
+
+            // save token
+            await storeToken(token_info);
+
+            authWindow.close();
+
+        } catch (error) {
+            console.log(error);
+        }
+    });
 });
 
 ipcMain.on('fetch-subscriptions', async(event, ...args) => {
     try {
-        
         let subscriptions = api.fetchSubscriptions(apikey);
-        
         event.sender.send('fetch-subscriptions', subscriptions);
-        
     } catch (error) {
         console.log(error);
     }
 });
 ipcMain.on('search-channel', async(event, q) => {
-    
     try {
-        
         let channels = api.searchChannel(apikey, q);
-
         event.sender.send('search-channel', channels);
-
     } catch (error) {
         console.log(error);
     }
 });
 ipcMain.on('search-video', async(event, q) => {
     try {
-
         let videos = await api.searchVideo(apikey, q);
-
         event.sender.send('search-video', videos);
-
     } catch (error) {
         console.log(error);
     }
 });
 ipcMain.on('search-playlist', async(event, q) => {
     try {
-
         let playlist = api.searchPlaylist(apikey, q);
-
         event.sender.send('search-playlist', playlist);
-
     } catch (error) {
         console.log(error);
     }
