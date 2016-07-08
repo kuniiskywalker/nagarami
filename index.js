@@ -271,7 +271,7 @@ ipcMain.on('open-auth-page', (event, ...args) => {
 
 ipcMain.on('fetch-subscriptions', async(event, ...args) => {
     try {
-        let subscriptions = api.fetchSubscriptions(apikey);
+        let subscriptions = await api.fetchSubscriptions(apikey);
         event.sender.send('fetch-subscriptions', subscriptions);
     } catch (error) {
         console.log(error);
@@ -279,7 +279,7 @@ ipcMain.on('fetch-subscriptions', async(event, ...args) => {
 });
 ipcMain.on('search-channel', async(event, q) => {
     try {
-        let channels = api.searchChannel(apikey, q);
+        let channels = await api.searchChannel(apikey, q);
         event.sender.send('search-channel', channels);
     } catch (error) {
         console.log(error);
@@ -295,7 +295,7 @@ ipcMain.on('search-video', async(event, q) => {
 });
 ipcMain.on('search-playlist', async(event, q) => {
     try {
-        let playlist = api.searchPlaylist(apikey, q);
+        let playlist = await api.searchPlaylist(apikey, q);
         event.sender.send('search-playlist', playlist);
     } catch (error) {
         console.log(error);
