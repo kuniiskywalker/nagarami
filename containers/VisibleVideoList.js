@@ -1,21 +1,13 @@
 import { connect } from 'react-redux'
 import VideoList from '../components/VideoList'
 import createIpc, { send } from 'redux-electron-ipc';
+import { previewVideo } from '../actions'
 
 function getVisibleTodos(videos, filter) {
     
     switch (filter) {
         case 'SHOW_ALL':
-            return videos.map((video, i) => {
-                return {
-                    id: video.id.videoId,
-                    title: video.snippet.title,
-                    description: video.snippet.description,
-                    thumbnail: video.snippet.thumbnails.default.url
-                }
-            }).filter((element) => {
-                return element.id != "" && element.id != undefined
-            })
+            return videos;
     }
 }
 function mapStateToProps(state) {
@@ -26,8 +18,11 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onVideoClick: (video) => {
+        onPlayVideo: (video) => {
             dispatch(send('select-video', video));
+        },
+        onPreviewVideo: (videoId) => {
+            dispatch(previewVideo(videoId));
         }
     }
 }

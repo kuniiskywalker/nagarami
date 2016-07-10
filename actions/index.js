@@ -21,3 +21,6 @@ export function showPlayer(event) {
 export function hidePlayer(event) {
     return {type: 'HIDE_PLAYER'}
 }
+export function previewVideo(videoId) {
+    return {type: 'PREVIEW_VIDEO', id: videoId}
+}

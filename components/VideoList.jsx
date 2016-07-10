@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import SearchVideo from '../containers/SearchVideo'
 import Video from './Video'
 
-const VideoList = ({ videos, onVideoClick }) => (
+const VideoList = ({ videos, onPlayVideo, onPreviewVideo }) => (
     <div>
         <SearchVideo />
         <ul>
@@ -10,7 +10,8 @@ const VideoList = ({ videos, onVideoClick }) => (
                 <Video
                     key={video.id}
                     {...video}
-                    onClick={() => onVideoClick(video)}
+                    onVideoPlayClick={() => onPlayVideo(video)}
+                    onVideoPreviewClick={() => onPreviewVideo(video.id)}
                 />
             )}
         </ul>
@@ -23,6 +24,7 @@ VideoList.propTypes = {
         description: PropTypes.string.isRequired,
         thumbnail: PropTypes.string.isRequired
     }).isRequired).isRequired,
-    onVideoClick: PropTypes.func.isRequired
+    onPlayVideo: PropTypes.func.isRequired,
+    onPreviewVideo: PropTypes.func.isRequired
 }
 export default VideoList
