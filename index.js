@@ -186,14 +186,23 @@ let getCredentials = () => {
 };
 
 // ログインチェック
-let isLoggedIn = () => {
-    return getSavedToken()
-        .then((saved_tokens) => {
-            if (Object.keys(saved_tokens).length > 0 && saved_tokens.access_token) {
-                return true;
-            }
-            return false;
-        });
+let checkToken = (token) => {
+    if (
+        !token ||
+        Object.keys(token).length === 0 ||
+        !token.access_token ||
+        !token.expiry_date
+    ) {
+        return false;
+    }
+
+    // 有効期限チェック
+    let now = parseInt( new Date() /1000 );
+    if (now >= token.expiry_date) {
+        return false;
+    }
+
+    return true;
 }
 
 // 起動時に呼ばれるイベント
@@ -209,13 +218,14 @@ app.on('ready', async () => {
         let oauth = api.oauth;
 
         // get saved token
-        let saved_tokens = await getSavedToken();
+        let token = await getSavedToken();
 
-        if (Object.keys(saved_tokens).length > 0 && saved_tokens.access_token) {
-
-            // 認証済トークンを認証用オブジェクトにセット
+        // 認証済トークンを認証用オブジェクトにセット
+        if (checkToken(token)) {
             oauth.setCredentials({
-                access_token: saved_tokens.access_token
+                access_token: token.access_token,
+                refresh_token: token.refresh_token,
+                expiry_date: token.expiry_date
             });
             api.setOauth(oauth);
         }
@@ -332,22 +342,24 @@ ipcMain.on('select-video', (event, video) => {
 });
 
 // 認証トークンをセット
-ipcMain.on('set-token', async(event, token) => {
+ipcMain.on('set-token', async(event, code) => {
     try {
 
         // 認証オブジェクト取得
         let oauth = api.oauth;
 
-        let token_info = await api.getToken(token);
-
+        let token = await api.getToken(code);
+        
         oauth.setCredentials({
-            access_token: token_info.access_token
+            access_token: token.access_token,
+            refresh_token: token.refresh_token,
+            expiry_date: token.expiry_date
         });
 
         api.setOauth(oauth);
-
+        
         // save token
-        await storeToken(token_info);
+        await storeToken(token);
 
         event.sender.send('authorization', true);
     } catch (error) {
@@ -356,10 +368,13 @@ ipcMain.on('set-token', async(event, token) => {
 });
 
 // 認証チェック
-ipcMain.on('check-authorization', async (event, token) => {
+ipcMain.on('check-authorization', async (event) => {
     try {
 
-        let is_logged_in = await isLoggedIn();
+        // get saved token
+        let token = await getSavedToken();
+        
+        let is_logged_in = await checkToken(token);
 
         event.sender.send('authorization', is_logged_in);
     } catch (error) {
