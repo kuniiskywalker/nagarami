@@ -24,3 +24,11 @@ export function hidePlayer(event) {
 export function previewVideo(videoId) {
     return {type: 'PREVIEW_VIDEO', id: videoId}
 }
+export function authorization(event, is_logged_in) {
+    
+    console.log("test" + is_logged_in);
+    
+    return {type: 'AUTHORIZATION', auth: {
+        is_logged_in: is_logged_in
+    }}
+}

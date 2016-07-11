@@ -28,8 +28,6 @@
     "babel-preset-stage-3": "^6.5.0",
     "babel-register": "^6.9.0",
     "electron-json-storage": "^2.0.0",
-    "node-static": "^0.7.7",
-    "query-string": "^4.2.2",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "react-redux": "^4.0.0",
