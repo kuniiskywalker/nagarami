@@ -6,11 +6,6 @@ import apiClient from './utils/ApiClient'
 import electron from 'electron'
 import storage from 'electron-json-storage'
 
-import nodeStatic from 'node-static'
-import queryString from 'query-string'
-
-let file = new nodeStatic.Server(__dirname);
-
 let {dialog} = require('electron');
 
 // アプリケーションをコントロールするモジュール
@@ -118,6 +113,7 @@ let createControllerWindow = (callback) => {
     });
 };
 
+
 // 保存したtoken情報を取得
 let getSavedToken = () => {
     return new Promise((resolve, reject) => {
@@ -145,6 +141,20 @@ let storeToken = (token) => {
     });
 };
 
+// 保存したtoken情報を削除
+let removeSavedToken = () => {
+    return new Promise((resolve, reject) => {
+        storage.remove('token', function(error, data) {
+            if (error) {
+                reject(error);
+                return;
+            }
+            const saved_tokens = "";
+            resolve();
+        });
+    });
+};
+
 // アプリケーション資格ファイルチェック
 let getCredentials = () => {
     return new Promise((resolve, reject) => {
@@ -157,19 +167,34 @@ let getCredentials = () => {
             
             let credentials = JSON.parse(text);
             
-            if (!credentials.web ||
-                !credentials.web.client_id ||
-                !credentials.web.client_secret ||
-                !credentials.web.redirect_uris[0])
+            if (!credentials.installed ||
+                !credentials.installed.client_id ||
+                !credentials.installed.client_secret ||
+                !credentials.installed.redirect_uris[0])
             {
                 reject("[no credential file]");
                 return;
             }
-            
-            resolve(credentials);
+
+            resolve({
+                "client_id": credentials.installed.client_id,
+                "client_secret": credentials.installed.client_secret,
+                "redirect_uri": credentials.installed.redirect_uris[0]
+            });
         });
     });
 };
+
+// ログインチェック
+let isLoggedIn = () => {
+    return getSavedToken()
+        .then((saved_tokens) => {
+            if (Object.keys(saved_tokens).length > 0 && saved_tokens.access_token) {
+                return true;
+            }
+            return false;
+        });
+}
 
 // 起動時に呼ばれるイベント
 app.on('ready', async () => {
@@ -186,21 +211,15 @@ app.on('ready', async () => {
         // get saved token
         let saved_tokens = await getSavedToken();
 
-        if (Object.keys(saved_tokens).length === 0 && !saved_tokens.access_token) {
-
-            createControllerWindow(() => {});
-        } else {
+        if (Object.keys(saved_tokens).length > 0 && saved_tokens.access_token) {
 
             // 認証済トークンを認証用オブジェクトにセット
             oauth.setCredentials({
                 access_token: saved_tokens.access_token
             });
-            
             api.setOauth(oauth);
-
-            createControllerWindow(() => {});
         }
-
+        createControllerWindow(() => {});
     } catch(error) {
         console.log( error );
         dialog.showErrorBox("application error", "Please notify the kuniiskywalker@gmail.com");
@@ -223,6 +242,8 @@ app.on('activate', () => {
 // 非同期プロセス通信
 
 // Actions
+
+// 再生プレイヤーを表示
 ipcMain.on('show-player', async(event, ...args) => {
     if (playerWindow != null) {
         playerWindow.show();
@@ -230,6 +251,7 @@ ipcMain.on('show-player', async(event, ...args) => {
     }
 });
 
+// 再生プレイヤーを非表示
 ipcMain.on('hide-player', async(event, ...args) => {
     if (playerWindow != null) {
         playerWindow.hide();
@@ -237,38 +259,32 @@ ipcMain.on('hide-player', async(event, ...args) => {
     }
 });
 
+// 認証ページを開く
 ipcMain.on('open-auth-page', (event, ...args) => {
-    createAuthWindow(async() => {
-        try {
-
-            // 認証後のコールバックURL GETパラーメータからtokenをとりだす
-            let url = authWindow.webContents.getURL();
-            let search = url.replace(/(.+?\?)(.+)/, "$2");
-            let parsed = queryString.parse(search);
-            let token = parsed["code"];
-
-            // 認証オブジェクト取得
-            let oauth = api.oauth;
-
-            let token_info = await api.getToken(token);
-
-            oauth.setCredentials({
-                access_token: token_info.access_token
-            });
-
-            api.setOauth(oauth);
-
-            // save token
-            await storeToken(token_info);
-
-            authWindow.close();
-
-        } catch (error) {
-            console.log(error);
-        }
-    });
+    createAuthWindow(() => {});
 });
 
+// ログアウト
+ipcMain.on('logout', async(event, ...args) => {
+    try {
+        
+        // 保存済みのトークンを取得
+        let token = await getSavedToken();
+
+        // ログアウト処理
+        await api.logout(token);
+
+        // 保存済みのトークンを削除
+        await removeSavedToken();
+
+        event.sender.send('authorization', false);
+        
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+// 自分のチャンネル一覧を取得
 ipcMain.on('fetch-subscriptions', async(event, ...args) => {
     try {
         let subscriptions = await api.fetchSubscriptions(apikey);
@@ -277,6 +293,8 @@ ipcMain.on('fetch-subscriptions', async(event, ...args) => {
         console.log(error);
     }
 });
+
+// チャンネルを検索
 ipcMain.on('search-channel', async(event, q) => {
     try {
         let channels = await api.searchChannel(apikey, q);
@@ -285,6 +303,8 @@ ipcMain.on('search-channel', async(event, q) => {
         console.log(error);
     }
 });
+
+// 動画を検索
 ipcMain.on('search-video', async(event, q) => {
     try {
         let videos = await api.searchVideo(apikey, q);
@@ -293,6 +313,8 @@ ipcMain.on('search-video', async(event, q) => {
         console.log(error);
     }
 });
+
+// プレイリストを検索
 ipcMain.on('search-playlist', async(event, q) => {
     try {
         let playlist = await api.searchPlaylist(apikey, q);
@@ -301,8 +323,46 @@ ipcMain.on('search-playlist', async(event, q) => {
         console.log(error);
     }
 });
+
+// 再生する動画を選択
 ipcMain.on('select-video', (event, video) => {
     createPlayerWindow(() => {
         playerWindow.send('play-video', video);
     });
+});
+
+// 認証トークンをセット
+ipcMain.on('set-token', async(event, token) => {
+    try {
+
+        // 認証オブジェクト取得
+        let oauth = api.oauth;
+
+        let token_info = await api.getToken(token);
+
+        oauth.setCredentials({
+            access_token: token_info.access_token
+        });
+
+        api.setOauth(oauth);
+
+        // save token
+        await storeToken(token_info);
+
+        event.sender.send('authorization', true);
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+// 認証チェック
+ipcMain.on('check-authorization', async (event, token) => {
+    try {
+
+        let is_logged_in = await isLoggedIn();
+
+        event.sender.send('authorization', is_logged_in);
+    } catch (error) {
+        console.log(error);
+    }
 });

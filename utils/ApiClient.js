@@ -3,9 +3,9 @@ import youtube from 'youtube-api'
 function ApiClient (credentials) {
     this.oauth = youtube.authenticate({
         type: "oauth",
-        client_id: credentials.web.client_id,
-        client_secret: credentials.web.client_secret,
-        redirect_url: credentials.web.redirect_uris[0]
+        client_id: credentials.client_id,
+        client_secret: credentials.client_secret,
+        redirect_url: credentials.redirect_uri
     });
 }
 
@@ -23,7 +23,7 @@ ApiClient.prototype.getToken = function(token) {
     return new Promise((resolve, reject) => {
         this.oauth.getToken(token, (err, token_info) => {
             if (err) {
-                reject("アクセストークンファイルが開けません");
+                reject(err);
                 return;
             }
             resolve(token_info);
@@ -31,10 +31,23 @@ ApiClient.prototype.getToken = function(token) {
     });
 };
 
+// ログアウト
+ApiClient.prototype.logout = function(token) {
+    return new Promise((resolve, reject) => {
+        this.oauth.revokeToken(token.access_token, (error) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
 // 認証用URL取得
 ApiClient.prototype.getAuthUrl = function(scope) {
     return this.oauth.generateAuthUrl({
-        //access_type: 'offline',
+        access_type: 'offline',
         scope: scope
     });
 }
