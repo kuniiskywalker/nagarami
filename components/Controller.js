@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
-import DisplaySwitchButton from './VisibleDisplaySwitchButton'
-import VisibleAuthUrl from './VisibleAuthUrl'
+import DisplaySwitchButton from '../containers/VisibleDisplaySwitchButton'
+import VisibleAuthUrl from '../containers/VisibleAuthUrl'
 import Naviagtion from './Naviagtion'
 
 const Controller = ({ children }) => (
