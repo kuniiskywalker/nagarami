@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import Controller from './containers/Controller'
+import Controller from './components/Controller'
 import Login from './containers/Login'
 import VisibleChannelList from './containers/VisibleChannelList'
 import VisiblePlaylistList from './containers/VisiblePlaylistList'
