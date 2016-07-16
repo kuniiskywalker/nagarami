@@ -1,25 +1,20 @@
 import React, { PropTypes, Component } from 'react'
 
+let DisplaySwitchButton = ({display, onShowButton, onHideButton}) => {
 
-class DisplaySwitchButton extends Component{
-    
-    render(){
-        const { display, onShowButton, onHideButton } = this.props
+    let button;
 
-        let button;
-
-        if(display){
-            button = <button onClick={onHideButton}>To show the player</button>;
-        } else {
-            button = <button onClick={onShowButton}>To hide the player</button>;
-        }
-        
-        return(
-            <div>
-                { button }
-            </div>
-        );
+    if(display){
+        button = <button onClick={onHideButton}>To show the player</button>;
+    } else {
+        button = <button onClick={onShowButton}>To hide the player</button>;
     }
+
+    return (
+        <div>
+            { button }
+        </div>
+    )
 }
 
 DisplaySwitchButton.propTypes = {
