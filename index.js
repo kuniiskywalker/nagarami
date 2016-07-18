@@ -348,10 +348,15 @@ ipcMain.on('set-token', async(event, code) => {
 });
 
 // 認証チェック
-ipcMain.on('check-authorization', (event) => {
-    if (youtubeClient.isTokenExpired()) {
-        event.sender.send('authorization', true);
-    } else {
+ipcMain.on('check-authorization', async(event) => {
+    try {
+        await refreshToken();
+        if (youtubeClient.isTokenExpired()) {
+            event.sender.send('authorization', true);
+        } else {
+            event.sender.send('authorization', false);
+	}
+    } catch (error) {
         event.sender.send('authorization', false);
     }
 });
