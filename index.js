@@ -2,9 +2,10 @@
 
 //追加モジュールの宣言
 import fs from 'fs'
-import apiClient from './utils/ApiClient'
 import electron from 'electron'
 import storage from 'electron-json-storage'
+
+import YoutubeClient from './utilities/YoutubeClient'
 
 let {dialog} = require('electron');
 
@@ -43,7 +44,7 @@ let authWindow;
 let controllerWindow;
 
 // youtube apiクライアント
-let api;
+let youtubeClient;
 
 // プレイヤーウィンドウ表示処理
 let createPlayerWindow = (callback) => {
@@ -76,7 +77,7 @@ let createPlayerWindow = (callback) => {
 let createAuthWindow = (callback) => {
 
     // 認証用URL取得
-    let authUrl = api.getAuthUrl(SCOPES);
+    let authUrl = youtubeClient.getAuthUrl(SCOPES);
     
     authWindow = new BrowserWindow({width: 800, height: 600});
     authWindow.loadURL(authUrl);
@@ -190,9 +191,9 @@ let getCredentials = () => {
 
 // トークンの有効期限延長処理
 let refreshToken = async() => {
-    if(!api.isTokenExpired()) {
-        let token = await api.refreshToken();
-        api.setToken(token);
+    if(!youtubeClient.isTokenExpired()) {
+        let token = await youtubeClient.refreshToken();
+        youtubeClient.setToken(token);
         storeToken(token);
    }
 };
@@ -203,14 +204,14 @@ app.on('ready', async () => {
     try {
 
         let credentials = await getCredentials();
-        
-        api = new apiClient(credentials);
+
+        youtubeClient = new YoutubeClient(credentials);
 
         let token = await getSavedToken();
 
         // 認証済トークンを認証用オブジェクトにセット
         if (!isEmptySavedToken(token)) {
-            api.setToken(token);
+            youtubeClient.setToken(token);
         }
         createControllerWindow(() => {});
     } catch(error) {
@@ -264,7 +265,7 @@ ipcMain.on('logout', async(event, ...args) => {
         let token = await getSavedToken();
 
         // ログアウト処理
-        await api.logout(token.access_token);
+        await youtubeClient.logout(token.access_token);
 
         // 保存済みのトークンを削除
         await removeSavedToken();
@@ -280,7 +281,7 @@ ipcMain.on('logout', async(event, ...args) => {
 ipcMain.on('fetch-subscriptions', async(event, ...args) => {
     try {
         await refreshToken();
-        let subscriptions = await api.fetchSubscriptions(apikey);
+        let subscriptions = await youtubeClient.fetchSubscriptions(apikey);
         event.sender.send('fetch-subscriptions', subscriptions);
     } catch (error) {
         console.log(error);
@@ -291,7 +292,7 @@ ipcMain.on('fetch-subscriptions', async(event, ...args) => {
 ipcMain.on('search-channel', async(event, q) => {
     try {
         await refreshToken();
-        let channels = await api.searchChannel(apikey, q);
+        let channels = await youtubeClient.searchChannel(apikey, q);
         event.sender.send('search-channel', channels);
     } catch (error) {
         console.log(error);
@@ -302,7 +303,7 @@ ipcMain.on('search-channel', async(event, q) => {
 ipcMain.on('search-video', async(event, q) => {
     try {
         await refreshToken();
-        let videos = await api.searchVideo(apikey, q);
+        let videos = await youtubeClient.searchVideo(apikey, q);
         event.sender.send('search-video', videos);
     } catch (error) {
         console.log(error);
@@ -313,7 +314,7 @@ ipcMain.on('search-video', async(event, q) => {
 ipcMain.on('search-playlist', async(event, q) => {
     try {
         await refreshToken();
-        let playlist = await api.searchPlaylist(apikey, q);
+        let playlist = await youtubeClient.searchPlaylist(apikey, q);
         event.sender.send('search-playlist', playlist);
     } catch (error) {
         console.log(error);
@@ -332,10 +333,10 @@ ipcMain.on('set-token', async(event, code) => {
     try {
 
         // 入力コードからトークンを取得
-        let token = await api.getTokenByCode(code);
+        let token = await youtubeClient.getTokenByCode(code);
 
         // トークンを認証オブジェクトにセット
-        api.setToken(token);
+        youtubeClient.setToken(token);
 
         // トークンを保存
         await storeToken(token);
@@ -348,7 +349,7 @@ ipcMain.on('set-token', async(event, code) => {
 
 // 認証チェック
 ipcMain.on('check-authorization', (event) => {
-    if (api.isTokenExpired()) {
+    if (youtubeClient.isTokenExpired()) {
         event.sender.send('authorization', true);
     } else {
         event.sender.send('authorization', false);
