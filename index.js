@@ -106,7 +106,6 @@ let createControllerWindow = (callback) => {
     });
 };
 
-
 // 保存したtoken情報を取得
 let getSavedToken = () => {
     return new Promise((resolve, reject) => {
@@ -115,13 +114,25 @@ let getSavedToken = () => {
                 reject(error);
                 return;
             }
-            const saved_tokens = data;
-            resolve(saved_tokens);
+            resolve(data);
         });
     });
 };
 
-// アクセストークンを保存する
+// 保存したtokenのチェック
+let isEmptySavedToken = (token) => {
+    if (
+        !token ||
+        Object.keys(token).length === 0 ||
+        !token.access_token ||
+        !token.refresh_token
+    ) {
+        return true;
+    }
+    return false;
+};
+
+// トークンを保存する
 let storeToken = (token) => {
     return new Promise((resolve, reject) => {
         storage.set('token', token, function(error) {
@@ -142,7 +153,6 @@ let removeSavedToken = () => {
                 reject(error);
                 return;
             }
-            const saved_tokens = "";
             resolve();
         });
     });
@@ -178,25 +188,14 @@ let getCredentials = () => {
     });
 };
 
-// ログインチェック
-let checkToken = (token) => {
-    if (
-        !token ||
-        Object.keys(token).length === 0 ||
-        !token.access_token ||
-        !token.expiry_date
-    ) {
-        return false;
-    }
-
-    // 有効期限チェック
-    let now = parseInt( new Date() /1000 );
-    if (now >= token.expiry_date) {
-        return false;
-    }
-
-    return true;
-}
+// トークンの有効期限延長処理
+let refreshToken = async() => {
+    if(!api.isTokenExpired()) {
+        let token = await api.refreshToken();
+        api.setToken(token);
+        storeToken(token);
+   }
+};
 
 // 起動時に呼ばれるイベント
 app.on('ready', async () => {
@@ -207,20 +206,11 @@ app.on('ready', async () => {
         
         api = new apiClient(credentials);
 
-        // 認証オブジェクト取得
-        let oauth = api.oauth;
-
-        // get saved token
         let token = await getSavedToken();
 
         // 認証済トークンを認証用オブジェクトにセット
-        if (checkToken(token)) {
-            oauth.setCredentials({
-                access_token: token.access_token,
-                refresh_token: token.refresh_token,
-                expiry_date: token.expiry_date
-            });
-            api.setOauth(oauth);
+        if (!isEmptySavedToken(token)) {
+            api.setToken(token);
         }
         createControllerWindow(() => {});
     } catch(error) {
@@ -243,8 +233,6 @@ app.on('activate', () => {
 });
 
 // 非同期プロセス通信
-
-// Actions
 
 // 再生プレイヤーを表示
 ipcMain.on('show-player', async(event, ...args) => {
@@ -270,12 +258,13 @@ ipcMain.on('open-auth-page', (event, ...args) => {
 // ログアウト
 ipcMain.on('logout', async(event, ...args) => {
     try {
-        
-        // 保存済みのトークンを取得
+
+        await refreshToken();
+
         let token = await getSavedToken();
 
         // ログアウト処理
-        await api.logout(token);
+        await api.logout(token.access_token);
 
         // 保存済みのトークンを削除
         await removeSavedToken();
@@ -290,6 +279,7 @@ ipcMain.on('logout', async(event, ...args) => {
 // 自分のチャンネル一覧を取得
 ipcMain.on('fetch-subscriptions', async(event, ...args) => {
     try {
+        await refreshToken();
         let subscriptions = await api.fetchSubscriptions(apikey);
         event.sender.send('fetch-subscriptions', subscriptions);
     } catch (error) {
@@ -300,6 +290,7 @@ ipcMain.on('fetch-subscriptions', async(event, ...args) => {
 // チャンネルを検索
 ipcMain.on('search-channel', async(event, q) => {
     try {
+        await refreshToken();
         let channels = await api.searchChannel(apikey, q);
         event.sender.send('search-channel', channels);
     } catch (error) {
@@ -310,6 +301,7 @@ ipcMain.on('search-channel', async(event, q) => {
 // 動画を検索
 ipcMain.on('search-video', async(event, q) => {
     try {
+        await refreshToken();
         let videos = await api.searchVideo(apikey, q);
         event.sender.send('search-video', videos);
     } catch (error) {
@@ -320,6 +312,7 @@ ipcMain.on('search-video', async(event, q) => {
 // プレイリストを検索
 ipcMain.on('search-playlist', async(event, q) => {
     try {
+        await refreshToken();
         let playlist = await api.searchPlaylist(apikey, q);
         event.sender.send('search-playlist', playlist);
     } catch (error) {
@@ -338,20 +331,13 @@ ipcMain.on('select-video', (event, video) => {
 ipcMain.on('set-token', async(event, code) => {
     try {
 
-        // 認証オブジェクト取得
-        let oauth = api.oauth;
+        // 入力コードからトークンを取得
+        let token = await api.getTokenByCode(code);
 
-        let token = await api.getToken(code);
-        
-        oauth.setCredentials({
-            access_token: token.access_token,
-            refresh_token: token.refresh_token,
-            expiry_date: token.expiry_date
-        });
+        // トークンを認証オブジェクトにセット
+        api.setToken(token);
 
-        api.setOauth(oauth);
-        
-        // save token
+        // トークンを保存
         await storeToken(token);
 
         event.sender.send('authorization', true);
@@ -361,16 +347,10 @@ ipcMain.on('set-token', async(event, code) => {
 });
 
 // 認証チェック
-ipcMain.on('check-authorization', async (event) => {
-    try {
-
-        // get saved token
-        let token = await getSavedToken();
-        
-        let is_logged_in = await checkToken(token);
-
-        event.sender.send('authorization', is_logged_in);
-    } catch (error) {
-        console.log(error);
+ipcMain.on('check-authorization', (event) => {
+    if (api.isTokenExpired()) {
+        event.sender.send('authorization', true);
+    } else {
+        event.sender.send('authorization', false);
     }
 });
