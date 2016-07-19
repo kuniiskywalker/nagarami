@@ -151,4 +151,18 @@ YoutubeClient.prototype.searchPlaylist = function(apikey, q) {
     });
 }
 
+// チャンネル動画取得
+YoutubeClient.prototype.fetchChannelVideo = function(apikey, channelId) {
+    return new Promise((resolve, reject) => {
+        youtube.search.list({
+            part: 'snippet',
+            channelId: channelId,
+            maxResults: 50,
+            key: apikey
+        }, function (a, result, response) {
+            resolve(result.items);
+        });
+    });
+}
+
 module.exports = YoutubeClient

@@ -5,6 +5,7 @@ import Login from './containers/Login'
 import VisibleChannelList from './containers/VisibleChannelList'
 import VisiblePlaylistList from './containers/VisiblePlaylistList'
 import VisibleVideoList from './containers/VisibleVideoList'
+import VisibleSubscriptionList from './containers/VisibleSubscriptionList'
 
 export default (
     <Route path="/" component={Controller}>
@@ -13,5 +14,6 @@ export default (
         <Route path="/channels" component={VisibleChannelList} />
         <Route path="/playlist" component={VisiblePlaylistList} />
         <Route path="/videos" component={VisibleVideoList} />
+        <Route path="/subscriptions" component={VisibleSubscriptionList} />
     </Route>
 );

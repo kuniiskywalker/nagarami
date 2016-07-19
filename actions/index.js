@@ -1,5 +1,15 @@
 export function fetchSubscription(event, subscriptions) {
-    return {type: 'FETCH_SUBSCRIPTION', subscriptions}
+    const data = subscriptions.map((channel, i) => {
+        const value = channel.snippet;
+        return {
+            id: value.resourceId.channelId,
+            thumbnail: value.thumbnails.default.url,
+            title: value.title
+        }
+    }).filter((element) => {
+        return element.id != ""
+    })
+    return {type: 'FETCH_SUBSCRIPTION', subscriptions: data}
 }
 export function searchChannel(event, channels) {
     return {type: 'SEARCH_CHANNEL', channels}
@@ -25,9 +35,6 @@ export function previewVideo(videoId) {
     return {type: 'PREVIEW_VIDEO', id: videoId}
 }
 export function authorization(event, is_logged_in) {
-    
-    console.log("test" + is_logged_in);
-    
     return {type: 'AUTHORIZATION', auth: {
         is_logged_in: is_logged_in
     }}

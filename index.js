@@ -356,8 +356,19 @@ ipcMain.on('check-authorization', async(event) => {
             event.sender.send('authorization', true);
         } else {
             event.sender.send('authorization', false);
-	}
+        }
     } catch (error) {
         event.sender.send('authorization', false);
+    }
+});
+
+// チャンネル動画取得
+ipcMain.on('fetch-channel-videos', async(event, channelId) => {
+    try {
+        await refreshToken();
+        const videos = await youtubeClient.fetchChannelVideo(apikey, channelId);
+        event.sender.send('search-video', videos);
+    } catch (error) {
+        console.log(error);
     }
 });
