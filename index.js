@@ -2,23 +2,24 @@
 
 //追加モジュールの宣言
 import fs from 'fs'
-import apiClient from './utils/ApiClient'
 import electron from 'electron'
 import storage from 'electron-json-storage'
 
-let {dialog} = require('electron');
+import YoutubeClient from './utilities/YoutubeClient'
+
+const {dialog} = require('electron');
 
 // アプリケーションをコントロールするモジュール
-let app = electron.app;
+const app = electron.app;
 
 // ウィンドウを作成するモジュール
-let BrowserWindow = electron.BrowserWindow;
+const BrowserWindow = electron.BrowserWindow;
 
 //Node.js側とHTML側で通信をするモジュール
-let ipcMain = electron.ipcMain;
+const ipcMain = electron.ipcMain;
 
 // スコープとアクセストークン関係
-let SCOPES = [
+const SCOPES = [
     'https://www.googleapis.com/auth/youtube',
     'https://www.googleapis.com/auth/youtube.force-ssl',
     'https://www.googleapis.com/auth/youtube.readonly',
@@ -26,12 +27,12 @@ let SCOPES = [
 ];
 
 // API KEY
-let APIKEY_PATH = __dirname + '/.credentials/apikey';
+const APIKEY_PATH = __dirname + '/.credentials/apikey';
 
 // OAuth 2.0 クライアント ID
-let CREDENTIALS_PATH = __dirname + '/.credentials/client_secret.json';
+const CREDENTIALS_PATH = __dirname + '/.credentials/client_secret.json';
 
-let apikey = fs.readFileSync(APIKEY_PATH, "utf-8");
+const apikey = fs.readFileSync(APIKEY_PATH, "utf-8");
 
 // プレイヤーウィンドウ
 let playerWindow;
@@ -43,24 +44,17 @@ let authWindow;
 let controllerWindow;
 
 // youtube apiクライアント
-let api;
-
-//
-require('http').createServer(function (request, response) {
-    request.addListener('end', function () {
-        file.serve(request, response);
-    }).resume();
-}).listen(7170);
+let youtubeClient;
 
 // プレイヤーウィンドウ表示処理
-let createPlayerWindow = (callback) => {
+const createPlayerWindow = (callback) => {
     if (playerWindow != null) {
         callback();
         return;
     }
-    let {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
-    let windowWidth = 420;
-    let windowHeight = 320;
+    const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+    const windowWidth = 420;
+    const windowHeight = 320;
 
     playerWindow = new BrowserWindow({
         width: windowWidth,
@@ -80,10 +74,10 @@ let createPlayerWindow = (callback) => {
 };
 
 // 認証用ウィンドウ表示処理
-let createAuthWindow = (callback) => {
+const createAuthWindow = (callback) => {
 
     // 認証用URL取得
-    let authUrl = api.getAuthUrl(SCOPES);
+    const authUrl = youtubeClient.getAuthUrl(SCOPES);
     
     authWindow = new BrowserWindow({width: 800, height: 600});
     authWindow.loadURL(authUrl);
@@ -98,7 +92,7 @@ let createAuthWindow = (callback) => {
 };
 
 // コントローラーウィンドウ表示処理
-let createControllerWindow = (callback) => {
+const createControllerWindow = (callback) => {
     if (controllerWindow != null) {
         return;
     }
@@ -115,21 +109,33 @@ let createControllerWindow = (callback) => {
 
 
 // 保存したtoken情報を取得
-let getSavedToken = () => {
+const getSavedToken = () => {
     return new Promise((resolve, reject) => {
         storage.get('token', function(error, data) {
             if (error) {
                 reject(error);
                 return;
             }
-            const saved_tokens = data;
-            resolve(saved_tokens);
+            resolve(data);
         });
     });
 };
 
-// アクセストークンを保存する
-let storeToken = (token) => {
+// 保存したtokenのチェック
+const isEmptySavedToken = (token) => {
+    if (
+        !token ||
+        Object.keys(token).length === 0 ||
+        !token.access_token ||
+        !token.refresh_token
+    ) {
+        return true;
+    }
+    return false;
+};
+
+// トークンを保存する
+const storeToken = (token) => {
     return new Promise((resolve, reject) => {
         storage.set('token', token, function(error) {
             if (error) {
@@ -142,21 +148,20 @@ let storeToken = (token) => {
 };
 
 // 保存したtoken情報を削除
-let removeSavedToken = () => {
+const removeSavedToken = () => {
     return new Promise((resolve, reject) => {
         storage.remove('token', function(error, data) {
             if (error) {
                 reject(error);
                 return;
             }
-            const saved_tokens = "";
             resolve();
         });
     });
 };
 
 // アプリケーション資格ファイルチェック
-let getCredentials = () => {
+const getCredentials = () => {
     return new Promise((resolve, reject) => {
         fs.readFile(CREDENTIALS_PATH, 'utf-8', (err, text) => {
 
@@ -164,8 +169,8 @@ let getCredentials = () => {
                 reject(err);
                 return;
             }
-            
-            let credentials = JSON.parse(text);
+
+            const credentials = JSON.parse(text);
             
             if (!credentials.installed ||
                 !credentials.installed.client_id ||
@@ -185,49 +190,29 @@ let getCredentials = () => {
     });
 };
 
-// ログインチェック
-let checkToken = (token) => {
-    if (
-        !token ||
-        Object.keys(token).length === 0 ||
-        !token.access_token ||
-        !token.expiry_date
-    ) {
-        return false;
-    }
-
-    // 有効期限チェック
-    let now = parseInt( new Date() /1000 );
-    if (now >= token.expiry_date) {
-        return false;
-    }
-
-    return true;
-}
+// トークンの有効期限延長処理
+const refreshToken = async() => {
+    if(!youtubeClient.isTokenExpired()) {
+        const token = await youtubeClient.refreshToken();
+        youtubeClient.setToken(token);
+        storeToken(token);
+   }
+};
 
 // 起動時に呼ばれるイベント
 app.on('ready', async () => {
 
     try {
 
-        let credentials = await getCredentials();
-        
-        api = new apiClient(credentials);
+        const credentials = await getCredentials();
 
-        // 認証オブジェクト取得
-        let oauth = api.oauth;
+        youtubeClient = new YoutubeClient(credentials);
 
-        // get saved token
-        let token = await getSavedToken();
+        const token = await getSavedToken();
 
         // 認証済トークンを認証用オブジェクトにセット
-        if (checkToken(token)) {
-            oauth.setCredentials({
-                access_token: token.access_token,
-                refresh_token: token.refresh_token,
-                expiry_date: token.expiry_date
-            });
-            api.setOauth(oauth);
+        if (!isEmptySavedToken(token)) {
+            youtubeClient.setToken(token);
         }
         createControllerWindow(() => {});
     } catch(error) {
@@ -250,8 +235,6 @@ app.on('activate', () => {
 });
 
 // 非同期プロセス通信
-
-// Actions
 
 // 再生プレイヤーを表示
 ipcMain.on('show-player', async(event, ...args) => {
@@ -277,12 +260,13 @@ ipcMain.on('open-auth-page', (event, ...args) => {
 // ログアウト
 ipcMain.on('logout', async(event, ...args) => {
     try {
-        
-        // 保存済みのトークンを取得
-        let token = await getSavedToken();
+
+        await refreshToken();
+
+        const token = await getSavedToken();
 
         // ログアウト処理
-        await api.logout(token);
+        await youtubeClient.logout(token.access_token);
 
         // 保存済みのトークンを削除
         await removeSavedToken();
@@ -297,7 +281,8 @@ ipcMain.on('logout', async(event, ...args) => {
 // 自分のチャンネル一覧を取得
 ipcMain.on('fetch-subscriptions', async(event, ...args) => {
     try {
-        let subscriptions = await api.fetchSubscriptions(apikey);
+        await refreshToken();
+        const subscriptions = await youtubeClient.fetchSubscriptions(apikey);
         event.sender.send('fetch-subscriptions', subscriptions);
     } catch (error) {
         console.log(error);
@@ -307,7 +292,8 @@ ipcMain.on('fetch-subscriptions', async(event, ...args) => {
 // チャンネルを検索
 ipcMain.on('search-channel', async(event, q) => {
     try {
-        let channels = await api.searchChannel(apikey, q);
+        await refreshToken();
+        const channels = await youtubeClient.searchChannel(apikey, q);
         event.sender.send('search-channel', channels);
     } catch (error) {
         console.log(error);
@@ -317,7 +303,8 @@ ipcMain.on('search-channel', async(event, q) => {
 // 動画を検索
 ipcMain.on('search-video', async(event, q) => {
     try {
-        let videos = await api.searchVideo(apikey, q);
+        await refreshToken();
+        const videos = await youtubeClient.searchVideo(apikey, q);
         event.sender.send('search-video', videos);
     } catch (error) {
         console.log(error);
@@ -327,7 +314,8 @@ ipcMain.on('search-video', async(event, q) => {
 // プレイリストを検索
 ipcMain.on('search-playlist', async(event, q) => {
     try {
-        let playlist = await api.searchPlaylist(apikey, q);
+        await refreshToken();
+        const playlist = await youtubeClient.searchPlaylist(apikey, q);
         event.sender.send('search-playlist', playlist);
     } catch (error) {
         console.log(error);
@@ -345,20 +333,13 @@ ipcMain.on('select-video', (event, video) => {
 ipcMain.on('set-token', async(event, code) => {
     try {
 
-        // 認証オブジェクト取得
-        let oauth = api.oauth;
+        // 入力コードからトークンを取得
+        const token = await youtubeClient.getTokenByCode(code);
 
-        let token = await api.getToken(code);
-        
-        oauth.setCredentials({
-            access_token: token.access_token,
-            refresh_token: token.refresh_token,
-            expiry_date: token.expiry_date
-        });
+        // トークンを認証オブジェクトにセット
+        youtubeClient.setToken(token);
 
-        api.setOauth(oauth);
-        
-        // save token
+        // トークンを保存
         await storeToken(token);
 
         event.sender.send('authorization', true);
@@ -368,16 +349,15 @@ ipcMain.on('set-token', async(event, code) => {
 });
 
 // 認証チェック
-ipcMain.on('check-authorization', async (event) => {
+ipcMain.on('check-authorization', async(event) => {
     try {
-
-        // get saved token
-        let token = await getSavedToken();
-        
-        let is_logged_in = await checkToken(token);
-
-        event.sender.send('authorization', is_logged_in);
+        await refreshToken();
+        if (youtubeClient.isTokenExpired()) {
+            event.sender.send('authorization', true);
+        } else {
+            event.sender.send('authorization', false);
+	}
     } catch (error) {
-        console.log(error);
+        event.sender.send('authorization', false);
     }
 });
