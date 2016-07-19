@@ -18,17 +18,7 @@ const videos = (state = [], action) => {
     const { videos } = action;
     switch (action.type) {
         case 'SEARCH_VIDEO':
-            return videos.map((video, i) => {
-                return {
-                    id: video.id.videoId,
-                    title: video.snippet.title,
-                    description: video.snippet.description,
-                    thumbnail: video.snippet.thumbnails.default.url,
-                    preview: false
-                }
-            }).filter((element) => {
-                return element.id != "" && element.id != undefined
-            })
+            return videos
         case 'PREVIEW_VIDEO':
             return state.map(t =>
                 video(t, action)
