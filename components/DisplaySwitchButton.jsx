@@ -1,13 +1,19 @@
 import React, { PropTypes, Component } from 'react'
 
+import RaisedButton from 'material-ui/RaisedButton';
+
+const style = {
+    margin: 12
+};
+
 let DisplaySwitchButton = ({display, onShowButton, onHideButton}) => {
 
     let button;
 
     if(display){
-        button = <button onClick={onHideButton}>To show the player</button>;
+        button = <RaisedButton onClick={onHideButton} label="Hide Player" secondary={true} style={style} />
     } else {
-        button = <button onClick={onShowButton}>To hide the player</button>;
+        button = <RaisedButton onClick={onShowButton} label="Show Player" primary={true} style={style} />
     }
 
     return (

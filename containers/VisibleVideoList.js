@@ -13,9 +13,6 @@ const mapDispatchToProps = (dispatch) => {
     return {
         onPlayVideo: (video) => {
             dispatch(send('select-video', video));
-        },
-        onPreviewVideo: (videoId) => {
-            dispatch(previewVideo(videoId));
         }
     }
 }

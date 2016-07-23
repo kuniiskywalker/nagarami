@@ -2,19 +2,20 @@ import React, { PropTypes } from 'react'
 import SearchVideo from '../containers/SearchVideo'
 import Video from './Video'
 
-const VideoList = ({ videos, onPlayVideo, onPreviewVideo }) => (
+import {List, ListItem} from 'material-ui/List';
+
+const VideoList = ({ videos, onPlayVideo }) => (
     <div>
         <SearchVideo />
-        <ul>
+        <List>
             {videos.map((video, i) =>
                 <Video
                     key={video.id}
                     {...video}
                     onVideoPlayClick={() => onPlayVideo(video)}
-                    onVideoPreviewClick={() => onPreviewVideo(video.id)}
                 />
             )}
-        </ul>
+        </List>
     </div>
 )
 VideoList.propTypes = {
@@ -24,7 +25,6 @@ VideoList.propTypes = {
         description: PropTypes.string.isRequired,
         thumbnail: PropTypes.string.isRequired
     }).isRequired).isRequired,
-    onPlayVideo: PropTypes.func.isRequired,
-    onPreviewVideo: PropTypes.func.isRequired
+    onPlayVideo: PropTypes.func.isRequired
 }
 export default VideoList

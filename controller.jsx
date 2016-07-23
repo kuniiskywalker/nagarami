@@ -10,6 +10,8 @@ import createIpc, { send } from 'redux-electron-ipc';
 import { Router, hashHistory } from 'react-router';
 import routes from './routes';
 
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 // store
 const ipc = createIpc({
   'fetch-subscriptions': fetchSubscription,
@@ -29,10 +31,12 @@ store.subscribe(() => console.log(store.getState()))
 store.dispatch(send('check-authorization'));
 
 render(
+  <MuiThemeProvider>
     <Provider store={store}>
       <Router history={hashHistory}>
         {routes}
       </Router>
-    </Provider>,
-    document.getElementById('root')
+    </Provider>
+  </MuiThemeProvider>,
+  document.getElementById('root')
 );
