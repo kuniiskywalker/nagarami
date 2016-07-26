@@ -5,14 +5,10 @@ const player = (state = initialState, action) => {
     switch (action.type) {
         case 'PLAY_VIDEO':
             return player
-        case 'SHOW_PLAYER':
+        case 'TOGGLE_PLAYER':
             return Object.assign({}, state, {
-                display: true
+                display: player.display
             });
-        case 'HIDE_PLAYER':
-            return Object.assign({}, state, {
-                display: false
-            })
         default:
 
             return state

@@ -46,6 +46,9 @@ let controllerWindow;
 // youtube apiクライアント
 let youtubeClient;
 
+// 
+let playerDisplayState = true;
+
 // プレイヤーウィンドウ表示処理
 const createPlayerWindow = (callback) => {
     if (playerWindow != null) {
@@ -71,6 +74,12 @@ const createPlayerWindow = (callback) => {
         callback();
     });
     playerWindow.setAlwaysOnTop(true);
+
+    if (playerDisplayState === true) {
+        playerWindow.show();
+    } else {
+        playerWindow.hide();
+    }
 };
 
 // 認証用ウィンドウ表示処理
@@ -237,19 +246,16 @@ app.on('activate', () => {
 // 非同期プロセス通信
 
 // 再生プレイヤーを表示
-ipcMain.on('show-player', async(event, ...args) => {
+ipcMain.on('toggle-player', async(event, display) => {
+    playerDisplayState = display; 
     if (playerWindow != null) {
-        playerWindow.show();
-        event.sender.send('show-player');
+        if (playerDisplayState === true) {
+	   playerWindow.show(); 
+	} else {
+	   playerWindow.hide(); 
+	}
     }
-});
-
-// 再生プレイヤーを非表示
-ipcMain.on('hide-player', async(event, ...args) => {
-    if (playerWindow != null) {
-        playerWindow.hide();
-        event.sender.send('hide-player');
-    }
+    event.sender.send('toggle-player', playerDisplayState);
 });
 
 // 認証ページを開く

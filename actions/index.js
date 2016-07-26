@@ -56,11 +56,10 @@ export function playVideo(event, video) {
         id: video.id
     }}
 }
-export function showPlayer(event) {
-    return {type: 'SHOW_PLAYER'}
-}
-export function hidePlayer(event) {
-    return {type: 'HIDE_PLAYER'}
+export function togglePlayer(event, display) {
+    return {type: 'TOGGLE_PLAYER', player: {
+        display: display 
+    }}
 }
 export function previewVideo(videoId) {
     return {type: 'PREVIEW_VIDEO', id: videoId}
