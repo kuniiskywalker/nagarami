@@ -2,12 +2,32 @@ import React, { PropTypes } from 'react'
 import SearchVideo from '../containers/SearchVideo'
 import Video from './Video'
 
-import {List, ListItem} from 'material-ui/List';
+import {GridList, GridTile} from 'material-ui/GridList';
+import IconButton from 'material-ui/IconButton';
+import Subheader from 'material-ui/Subheader';
+import StarBorder from 'material-ui/svg-icons/toggle/star-border';
+
+const styles = {
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+    },
+    gridList: {
+        width: 500,
+        height: 500,
+        overflowY: 'auto',
+        marginBottom: 24,
+    }
+};
 
 const VideoList = ({ videos, onPlayVideo }) => (
-    <div>
+    <div style={styles.root}>
         <SearchVideo />
-        <List>
+        <GridList
+            cellHeight={200}
+            style={styles.gridList}
+            >
             {videos.map((video, i) =>
                 <Video
                     key={video.id}
@@ -15,7 +35,7 @@ const VideoList = ({ videos, onPlayVideo }) => (
                     onVideoPlayClick={() => onPlayVideo(video)}
                 />
             )}
-        </List>
+        </GridList>
     </div>
 )
 VideoList.propTypes = {

@@ -1,27 +1,17 @@
 import React, { PropTypes } from 'react'
 import PreviewPlayer from './PreviewPlayer'
 
-import {List, ListItem} from 'material-ui/List';
-import Divider from 'material-ui/Divider';
-import Subheader from 'material-ui/Subheader';
-import Avatar from 'material-ui/Avatar';
-import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
-import IconButton from 'material-ui/IconButton';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
+import {GridList, GridTile} from 'material-ui/GridList';
 
 const Video = ({ id, title, thumbnail, description, onVideoPlayClick }) => (
-    <ListItem
-        onClick={e => {
-            e.preventDefault()
-            onVideoPlayClick()
-        }}
-        leftAvatar={<Avatar src={thumbnail} size="50" />}
-        primaryText={title}
-        secondaryText={description}
-        secondaryTextLines={2}
-    />
+    <GridTile
+    key={id}
+    title={title}
+    subtitle={description}
+    onClick={onVideoPlayClick}
+    >
+    <img src={thumbnail} />
+    </GridTile>
 )
 
 Video.propTypes = {

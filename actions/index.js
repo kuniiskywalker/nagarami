@@ -3,7 +3,7 @@ export function fetchSubscription(event, subscriptions) {
         const value = channel.snippet;
         return {
             id: value.resourceId.channelId,
-            thumbnail: value.thumbnails.default.url,
+            thumbnail: value.thumbnails.high.url,
             title: value.title
         }
     }).filter((element) => {
@@ -16,7 +16,7 @@ export function searchChannel(event, channels) {
         return {
             id: channel.snippet.channelId,
             title: channel.snippet.channelTitle,
-            thumbnail: channel.snippet.thumbnails.default.url
+            thumbnail: channel.snippet.thumbnails.high.url
         }
     }).filter((element) => {
         return element.id != ""
@@ -43,7 +43,7 @@ export function searchVideo(event, videos) {
             id: video.id.videoId,
             title: video.snippet.title,
             description: video.snippet.description,
-            thumbnail: video.snippet.thumbnails.default.url,
+            thumbnail: video.snippet.thumbnails.high.url,
             preview: false
         }
     }).filter((element) => {
