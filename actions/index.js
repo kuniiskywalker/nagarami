@@ -43,8 +43,7 @@ export function searchVideo(event, videos) {
             id: video.id.videoId,
             title: video.snippet.title,
             description: video.snippet.description,
-            thumbnail: video.snippet.thumbnails.high.url,
-            preview: false
+            thumbnail: video.snippet.thumbnails.high.url
         }
     }).filter((element) => {
         return element.id != "" && element.id != undefined
@@ -61,9 +60,15 @@ export function togglePlayer(event, display) {
         display: display 
     }}
 }
-export function previewVideo(videoId) {
-    return {type: 'PREVIEW_VIDEO', id: videoId}
+
+
+export function startPreviewVideo(videoId, thumbnail) {
+    return {type: 'START_PREVIEW_VIDEO', id: videoId, thumbnail: thumbnail}
 }
+export function stopPreviewVideo(videoId, thumbnail) {
+    return {type: 'STOP_PREVIEW_VIDEO', id: videoId, thumbnail: thumbnail}
+}
+
 export function authorization(event, is_logged_in) {
     return {type: 'AUTHORIZATION', auth: {
         is_logged_in: is_logged_in

@@ -1,14 +1,20 @@
+
 const video = (state, action) => {
     switch (action.type) {
-        case 'PREVIEW_VIDEO':
+        case 'START_PREVIEW_VIDEO':
             if (state.id !== action.id) {
                 return state
             }
-
             return Object.assign({}, state, {
-                preview: !state.preview
+                thumbnail: action.thumbnail
             })
-
+        case 'STOP_PREVIEW_VIDEO':
+            if (state.id !== action.id) {
+                return state
+            }
+            return Object.assign({}, state, {
+                thumbnail: action.thumbnail
+            })
         default:
             return state
     }
@@ -19,7 +25,8 @@ const videos = (state = [], action) => {
     switch (action.type) {
         case 'SEARCH_VIDEO':
             return videos
-        case 'PREVIEW_VIDEO':
+        case 'START_PREVIEW_VIDEO':
+        case 'STOP_PREVIEW_VIDEO':
             return state.map(t =>
                 video(t, action)
             )

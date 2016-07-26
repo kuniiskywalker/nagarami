@@ -21,7 +21,7 @@ const styles = {
     }
 };
 
-const VideoList = ({ videos, onPlayVideo }) => (
+const VideoList = ({ videos, onPlayVideo, onStartPreviewVideo, onStopPreviewVideo }) => (
     <div style={styles.root}>
         <SearchVideo />
         <GridList
@@ -32,7 +32,9 @@ const VideoList = ({ videos, onPlayVideo }) => (
                 <Video
                     key={video.id}
                     {...video}
-                    onVideoPlayClick={() => onPlayVideo(video)}
+                    onPlayVideoClick={() => onPlayVideo(video)}
+                    onStartPreviewVideoHover={() => onStartPreviewVideo(video.id, video.thumbnail)}
+                    onStopPreviewVideoHover={() => onStopPreviewVideo(video.id, video.thumbnail)}
                 />
             )}
         </GridList>
@@ -45,6 +47,8 @@ VideoList.propTypes = {
         description: PropTypes.string.isRequired,
         thumbnail: PropTypes.string.isRequired
     }).isRequired).isRequired,
-    onPlayVideo: PropTypes.func.isRequired
+    onPlayVideo: PropTypes.func.isRequired,
+    onStartPreviewVideo: PropTypes.func.isRequired,
+    onStopPreviewVideo: PropTypes.func.isRequired
 }
 export default VideoList

@@ -3,12 +3,14 @@ import PreviewPlayer from './PreviewPlayer'
 
 import {GridList, GridTile} from 'material-ui/GridList';
 
-const Video = ({ id, title, thumbnail, description, onVideoPlayClick }) => (
+const Video = ({ id, title, thumbnail, description, onPlayVideoClick, onStartPreviewVideoHover, onStopPreviewVideoHover }) => (
     <GridTile
     key={id}
     title={title}
     subtitle={description}
-    onClick={onVideoPlayClick}
+    onClick={onPlayVideoClick}
+    onMouseOver={onStartPreviewVideoHover}
+    onMouseOut={onStopPreviewVideoHover}
     >
     <img src={thumbnail} />
     </GridTile>
@@ -19,7 +21,9 @@ Video.propTypes = {
     title: PropTypes.string.isRequired,
     thumbnail: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
-    onVideoPlayClick: PropTypes.func.isRequired
+    onPlayVideoClick: PropTypes.func.isRequired,
+    onStartPreviewVideoHover: PropTypes.func.isRequired,
+    onStopPreviewVideoHover: PropTypes.func.isRequired
 }
 
 export default Video
