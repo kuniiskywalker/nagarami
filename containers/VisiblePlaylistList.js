@@ -10,6 +10,9 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        onSearchPlaylist: (keyword) => {
+            dispatch(send('search-playlist', keyword));
+        },
         onPlaylistClick: (playlistId) => {
             dispatch(send('select-playlist', playlistId));
         }

@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import SearchVideo from '../containers/SearchVideo'
+import SearchKeywordTextField from './SearchKeywordTextField'
 import Video from './Video'
 
 import {GridList, GridTile} from 'material-ui/GridList';
@@ -21,13 +21,13 @@ const styles = {
     }
 };
 
-const VideoList = ({ videos, onPlayVideo, onStartPreviewVideo, onStopPreviewVideo }) => (
+const VideoList = ({ videos, onSearchVideo, onPlayVideo, onStartPreviewVideo, onStopPreviewVideo }) => (
     <div style={styles.root}>
-        <SearchVideo />
+        <SearchKeywordTextField onSearch={onSearchVideo} />
         <GridList
             cellHeight={200}
             style={styles.gridList}
-            >
+        >
             {videos.map((video, i) =>
                 <Video
                     key={video.id}
@@ -47,6 +47,7 @@ VideoList.propTypes = {
         description: PropTypes.string.isRequired,
         thumbnail: PropTypes.string.isRequired
     }).isRequired).isRequired,
+    onSearchVideo: PropTypes.func.isRequired,
     onPlayVideo: PropTypes.func.isRequired,
     onStartPreviewVideo: PropTypes.func.isRequired,
     onStopPreviewVideo: PropTypes.func.isRequired

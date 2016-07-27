@@ -11,7 +11,6 @@ const Controller = ({ children }) => (
         </div>
         <Naviagtion />
         {children}
-        <Naviagtion />
     </div>
 )
 Controller.propTypes = {

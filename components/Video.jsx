@@ -5,12 +5,12 @@ import {GridList, GridTile} from 'material-ui/GridList';
 
 const Video = ({ id, title, thumbnail, description, onPlayVideoClick, onStartPreviewVideoHover, onStopPreviewVideoHover }) => (
     <GridTile
-    key={id}
-    title={title}
-    subtitle={description}
-    onClick={onPlayVideoClick}
-    onMouseOver={onStartPreviewVideoHover}
-    onMouseOut={onStopPreviewVideoHover}
+        key={id}
+        title={title}
+        subtitle={description}
+        onClick={onPlayVideoClick}
+        onMouseOver={onStartPreviewVideoHover}
+        onMouseOut={onStopPreviewVideoHover}
     >
     <img src={thumbnail} />
     </GridTile>

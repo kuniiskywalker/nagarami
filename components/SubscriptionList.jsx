@@ -1,6 +1,22 @@
 import React, { PropTypes, Component  } from 'react'
 import Channel from './Channel'
 
+import {GridList, GridTile} from 'material-ui/GridList';
+
+const styles = {
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around'
+    },
+    gridList: {
+        width: 500,
+        height: 500,
+        overflowY: 'auto',
+        marginBottom: 24
+    }
+};
+
 class SubscriptionList extends Component {
     constructor(props) {
         super(props);
@@ -13,7 +29,7 @@ class SubscriptionList extends Component {
     
     componentWillUpdate(){
     }
-    
+
     componentWillUnmount() {
     }
 
@@ -21,16 +37,19 @@ class SubscriptionList extends Component {
         const { subscriptions, onChannelClick } = this.props;
 
         return (
-            <div>
-                <ul>
+            <div style={styles.root}>
+                <GridList
+                    cellHeight={200}
+                    style={styles.gridList}
+                >
                     {subscriptions.map((channel, i) =>
                     <Channel
                         key={channel.id}
-                    {...channel}
+                        {...channel}
                         onClick={() => onChannelClick(channel.id)}
                     />
                     )}
-                </ul>
+                </GridList>
             </div>
         );
     }
