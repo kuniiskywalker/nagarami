@@ -10,6 +10,8 @@ import createIpc, { send } from 'redux-electron-ipc';
 import { Router, hashHistory } from 'react-router';
 import routes from './routes';
 
+import injectTapEventPlugin from "react-tap-event-plugin";
+
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 // store
@@ -28,6 +30,8 @@ store.subscribe(() => console.log(store.getState()))
 
 // 
 store.dispatch(send('check-authorization'));
+
+injectTapEventPlugin();
 
 render(
   <MuiThemeProvider>
