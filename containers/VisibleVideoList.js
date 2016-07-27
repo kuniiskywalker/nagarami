@@ -9,18 +9,24 @@ function mapStateToProps(state) {
     }
 }
 
+const previewThumbnailNum = 3;
+
+const previewAnimationInterval = 1000;
+
 let previewTimerId = 0;
 
+let defaultThumbnail;
+
 const setPreviewVideoTimer = (thumbnail, num, callback) => {
+    if (num > previewThumbnailNum) {
+        num = 1;
+    }
+    const imgPath = thumbnail.match(/(.+)\/(.+)\.(.+)/);
+    const newImg = imgPath[1] + '/' + num + '.' + imgPath[3];
+    callback(newImg);
     previewTimerId = setTimeout(() => {
-        if (num > 3) {
-            num = 1;
-        }
-        const imgPath = thumbnail.match(/(.+)\/(.+)\.(.+)/);
-        const newImg = imgPath[1] + '/' + num + '.' + imgPath[3];
-        callback(newImg);
         setPreviewVideoTimer(thumbnail, ++num, callback);
-    }, 1000);
+    }, previewAnimationInterval);
 }
 
 const clearPreviewVideoTimer = () => {
@@ -35,14 +41,15 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(send('select-video', video));
         },
         onStartPreviewVideo: (videoId, thumbnail) => {
+            defaultThumbnail = thumbnail;
             clearPreviewVideoTimer();
             setPreviewVideoTimer(thumbnail, 1, (newImg) => {
                 dispatch(startPreviewVideo(videoId, newImg));
             });
         },
-        onStopPreviewVideo: (videoId, thumbnail) => {
+        onStopPreviewVideo: (videoId) => {
             clearPreviewVideoTimer();
-            dispatch(stopPreviewVideo(videoId, thumbnail));
+            dispatch(stopPreviewVideo(videoId, defaultThumbnail));
         }
     }
 }

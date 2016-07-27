@@ -11,13 +11,13 @@ const styles = {
     root: {
         display: 'flex',
         flexWrap: 'wrap',
-        justifyContent: 'space-around',
+        justifyContent: 'space-around'
     },
     gridList: {
         width: 500,
         height: 500,
         overflowY: 'auto',
-        marginBottom: 24,
+        marginBottom: 24
     }
 };
 
@@ -34,7 +34,7 @@ const VideoList = ({ videos, onPlayVideo, onStartPreviewVideo, onStopPreviewVide
                     {...video}
                     onPlayVideoClick={() => onPlayVideo(video)}
                     onStartPreviewVideoHover={() => onStartPreviewVideo(video.id, video.thumbnail)}
-                    onStopPreviewVideoHover={() => onStopPreviewVideo(video.id, video.thumbnail)}
+                    onStopPreviewVideoHover={() => onStopPreviewVideo(video.id)}
                 />
             )}
         </GridList>

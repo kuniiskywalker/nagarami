@@ -8,10 +8,13 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onLoginClick: () => {
+        onOpenAuthPage: () => {
             dispatch(send('open-auth-page'));
         },
-        onLogoutClick: () => {
+        onAuthToken: (code) => {
+            dispatch(send('set-token', code));
+        },
+        onLogout: () => {
             dispatch(send('logout'));
         }
     }
