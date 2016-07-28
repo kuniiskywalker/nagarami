@@ -1,11 +1,30 @@
 import React, { PropTypes } from 'react'
-import SearchPlaylist from '../containers/SearchPlaylist'
+import SearchKeywordTextField from './SearchKeywordTextField'
 import Playlist from './Playlist'
 
-const PlaylistList = ({ playlists, onPlaylistClick }) => (
-    <div>
-        <SearchPlaylist />
-        <ul>
+import {GridList, GridTile} from 'material-ui/GridList';
+
+const styles = {
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around'
+    },
+    gridList: {
+        width: 500,
+        height: 500,
+        overflowY: 'auto',
+        marginBottom: 24
+    }
+};
+
+const PlaylistList = ({ playlists, onSearchPlaylist, onPlaylistClick }) => (
+    <div style={styles.root}>
+        <SearchKeywordTextField onSearch={onSearchPlaylist} placeholder="search playlist" />
+        <GridList
+            cellHeight={200}
+            style={styles.gridList}
+        >
             {playlists.map((playlist, i) =>
                 <Playlist
                     key={playlist.id}
@@ -13,7 +32,7 @@ const PlaylistList = ({ playlists, onPlaylistClick }) => (
                     onClick={() => onPlaylistClick(playlist.id)}
                 />
             )}
-        </ul>
+        </GridList>
     </div>
 )
 PlaylistList.propTypes = {
@@ -24,6 +43,7 @@ PlaylistList.propTypes = {
         description: PropTypes.string.isRequired,
         thumbnail: PropTypes.string.isRequired
     }).isRequired).isRequired,
+    onSearchPlaylist: PropTypes.func.isRequired,
     onPlaylistClick: PropTypes.func.isRequired
 }
 export default PlaylistList

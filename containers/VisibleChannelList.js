@@ -10,6 +10,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        onSearchChannel: (keyword) => {
+            dispatch(send('search-channel', keyword));
+        },
         onChannelClick: (id) => {
             dispatch(send('fetch-videos', id));
         }

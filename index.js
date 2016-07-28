@@ -46,6 +46,9 @@ let controllerWindow;
 // youtube apiクライアント
 let youtubeClient;
 
+// 
+let playerDisplayState = true;
+
 // プレイヤーウィンドウ表示処理
 const createPlayerWindow = (callback) => {
     if (playerWindow != null) {
@@ -61,8 +64,10 @@ const createPlayerWindow = (callback) => {
         height: windowHeight,
         x: width - windowWidth,
         y: height - windowHeight,
-        frame: false
+        frame: false,
+        show: playerDisplayState
     });
+
     playerWindow.loadURL('file://' + __dirname + '/player.html');
     playerWindow.on('closed', () => {
         playerWindow = null;
@@ -81,7 +86,6 @@ const createAuthWindow = (callback) => {
     
     authWindow = new BrowserWindow({width: 800, height: 600});
     authWindow.loadURL(authUrl);
-    authWindow.openDevTools();
     authWindow.on('closed', () => {
         authWindow = null;
     });
@@ -96,7 +100,7 @@ const createControllerWindow = (callback) => {
     if (controllerWindow != null) {
         return;
     }
-    controllerWindow = new BrowserWindow({width: 800, height: 600});
+    controllerWindow = new BrowserWindow({width: 550, height: 760});
     controllerWindow.loadURL('file://' + __dirname + '/controller.html');
     controllerWindow.openDevTools();
     controllerWindow.on('closed', () => {
@@ -237,19 +241,16 @@ app.on('activate', () => {
 // 非同期プロセス通信
 
 // 再生プレイヤーを表示
-ipcMain.on('show-player', async(event, ...args) => {
+ipcMain.on('toggle-player', async(event, display) => {
+    playerDisplayState = display;
     if (playerWindow != null) {
-        playerWindow.show();
-        event.sender.send('show-player');
+        if (playerDisplayState === true) {
+            playerWindow.show();
+        } else {
+           playerWindow.hide();
+        }
     }
-});
-
-// 再生プレイヤーを非表示
-ipcMain.on('hide-player', async(event, ...args) => {
-    if (playerWindow != null) {
-        playerWindow.hide();
-        event.sender.send('hide-player');
-    }
+    event.sender.send('toggle-player', playerDisplayState);
 });
 
 // 認証ページを開く
@@ -275,6 +276,7 @@ ipcMain.on('logout', async(event, ...args) => {
         
     } catch (error) {
         console.log(error);
+        event.sender.send('authorization', false);
     }
 });
 

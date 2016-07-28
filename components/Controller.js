@@ -1,19 +1,20 @@
 import React, { PropTypes } from 'react'
-import DisplaySwitchButton from '../containers/VisibleDisplaySwitchButton'
-import VisibleUserMenu from '../containers/VisibleUserMenu'
-import Naviagtion from './Naviagtion'
+import VisibleToolBar from '../containers/VisibleToolBar'
+import VisibleTogglePlayerButton from '../containers/VisibleTogglePlayerButton'
 
-const Controller = ({ children }) => (
-    <div>
+const Controller = ({ children }) => {
+    return (
         <div>
-            <DisplaySwitchButton />
-            <VisibleUserMenu />
+            <div>
+                <VisibleToolBar />
+            </div>
+            <div>
+                {children}
+            </div>
+            <VisibleTogglePlayerButton />
         </div>
-        <Naviagtion />
-        {children}
-        <Naviagtion />
-    </div>
-)
+    )
+}
 Controller.propTypes = {
     children: PropTypes.element.isRequired
 }

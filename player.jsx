@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { applyMiddleware, createStore } from 'redux';
 import todoApp from './reducers'
 import { playVideo } from './actions'
-import PlayerApp from './components/PlayerApp'
+import VisiblePlayer from './containers/VisiblePlayer'
 
 import createIpc, { send } from 'redux-electron-ipc';
 
@@ -19,7 +19,7 @@ store.subscribe(() => console.log(store.getState()))
 
 render(
   <Provider store={store}>
-    <PlayerApp />
+    <VisiblePlayer />
   </Provider>,
   document.getElementById('root')
 );

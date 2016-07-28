@@ -1,18 +1,22 @@
 import React, { PropTypes } from 'react'
 
-const Channel = ({ onClick, title, thumbnail }) => (
-    <li
+import {GridList, GridTile} from 'material-ui/GridList';
+
+const Channel = ({ id, title, thumbnail, onClick }) => (
+    <GridTile
+        key={id}
+        title={title}
         onClick={onClick}
     >
-    {title}
     <img src={thumbnail} />
-    </li>
+    </GridTile>
 )
 
 Channel.propTypes = {
-    onClick: PropTypes.func.isRequired,
+    id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
-    thumbnail: PropTypes.string.isRequired
+    thumbnail: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired
 }
 
 export default Channel
