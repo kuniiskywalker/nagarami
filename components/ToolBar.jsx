@@ -27,11 +27,6 @@ class ToolBar extends React.Component {
         this.handleClose  = this.handleClose.bind(this);
     }
 
-    componentWillMount() {
-        const { fetchSubscriptions } = this.props;
-        fetchSubscriptions();
-    }
-    
     handleToggle() {
         this.setState({open: !this.state.open});
     }
@@ -42,7 +37,7 @@ class ToolBar extends React.Component {
     
     render() {
 
-        const { is_logged_in, onOpenAuthPage, onAuthToken, onLogout, subscriptions } = this.props;
+        const { is_logged_in, onOpenAuthPage, onLogout } = this.props;
 
         let leftElement;
         
@@ -69,13 +64,6 @@ class ToolBar extends React.Component {
                     >
                         <List>
                             <Subheader>My channel</Subheader>
-                            {subscriptions.map((channel, i) =>
-                                    <ListItem onTouchTap={this.handleClose}
-                                        key={channel.id}
-                                        primaryText={channel.title}
-                                        leftAvatar={<Avatar src={channel.thumbnail} />}
-                                    />
-                            )}
                         </List>
                     </Drawer>
                 </div>
@@ -95,7 +83,7 @@ class ToolBar extends React.Component {
                 </IconMenu>
             )
 
-            rightElement = <LoginButton onOpenAuthPage={onOpenAuthPage} onAuthToken={onAuthToken} />
+            rightElement = <LoginButton onOpenAuthPage={onOpenAuthPage} />
         }
 
         return (
@@ -109,15 +97,8 @@ class ToolBar extends React.Component {
 }
 
 ToolBar.propTypes = {
-    subscriptions: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-        thumbnail: PropTypes.string.isRequired
-    }).isRequired).isRequired,
-    fetchSubscriptions: PropTypes.func.isRequired,
     is_logged_in: PropTypes.bool.isRequired,
     onOpenAuthPage: PropTypes.func.isRequired,
-    onAuthToken: PropTypes.func.isRequired,
     onLogout: PropTypes.func.isRequired
 }
 export default ToolBar

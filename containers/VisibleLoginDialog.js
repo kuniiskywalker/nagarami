@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import createIpc, { send } from 'redux-electron-ipc';
-import UserMenu from '../components/UserMenu'
+import LoginDialog from '../components/LoginDialog'
 
 const mapStateToProps = (state) => {
     return state.auth
@@ -8,21 +8,21 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        fetchSubscriptions: () => {
+            dispatch(send('fetch-subscriptions'));
+        },
         onOpenAuthPage: () => {
             dispatch(send('open-auth-page'));
         },
         onAuthToken: (code) => {
             dispatch(send('set-token', code));
-        },
-        onLogout: () => {
-            dispatch(send('logout'));
         }
     }
 }
 
-const VisibleUserMenu = connect(
+const VisibleLoginDialog = connect(
     mapStateToProps,
     mapDispatchToProps
-)(UserMenu)
+)(LoginDialog)
 
-export default VisibleUserMenu
+export default VisibleLoginDialog
