@@ -20,7 +20,7 @@ const styles = {
 
 const PlaylistList = ({ playlists, onSearchPlaylist, onPlaylistClick }) => (
     <div style={styles.root}>
-        <SearchKeywordTextField onSearch={onSearchPlaylist} />
+        <SearchKeywordTextField onSearch={onSearchPlaylist} placeholder="search playlist" />
         <GridList
             cellHeight={200}
             style={styles.gridList}

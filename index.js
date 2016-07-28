@@ -281,6 +281,7 @@ ipcMain.on('logout', async(event, ...args) => {
         
     } catch (error) {
         console.log(error);
+        event.sender.send('authorization', false);
     }
 });
 

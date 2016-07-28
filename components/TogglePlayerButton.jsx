@@ -3,7 +3,10 @@ import React, { PropTypes, Component } from 'react'
 import RaisedButton from 'material-ui/RaisedButton';
 
 const style = {
-    margin: 12
+	position: 'fixed',
+	bottom: '10px',
+	right: '10px',
+	padding: '2px'
 };
 
 let TogglePlayerButton = ({display, onToggleDisplay}) => {

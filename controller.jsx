@@ -26,7 +26,7 @@ const ipc = createIpc({
 const store = createStore(todoApp, applyMiddleware(ipc));
 
 // 状態変更を監視してコンソールに出力
-store.subscribe(() => console.log(store.getState()))
+//store.subscribe(() => console.log(store.getState()))
 
 // 
 store.dispatch(send('check-authorization'));

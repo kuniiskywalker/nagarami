@@ -23,7 +23,7 @@ const styles = {
 
 const VideoList = ({ videos, onSearchVideo, onPlayVideo, onStartPreviewVideo, onStopPreviewVideo }) => (
     <div style={styles.root}>
-        <SearchKeywordTextField onSearch={onSearchVideo} />
+        <SearchKeywordTextField onSearch={onSearchVideo} placeholder="search video" />
         <GridList
             cellHeight={200}
             style={styles.gridList}

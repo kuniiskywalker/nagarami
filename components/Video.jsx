@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import PreviewPlayer from './PreviewPlayer'
 
 import {GridList, GridTile} from 'material-ui/GridList';
 

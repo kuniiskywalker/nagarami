@@ -16,10 +16,11 @@ class SearchKeywordTextField extends React.Component {
     }
 
     render() {
+        const { placeholder } = this.props;
         return (
             <div>
                 <TextField
-                    hintText="Hint Text"
+                    hintText={placeholder}
                     ref="keyword"
                 />
                 <FlatButton label="Search" primary={true} onClick={this.onClickButton} />
@@ -29,7 +30,8 @@ class SearchKeywordTextField extends React.Component {
 }
 
 SearchKeywordTextField.propTypes = {
-    onSearch: PropTypes.func.isRequired
+    onSearch: PropTypes.func.isRequired,
+    placeholder: PropTypes.string.isRequired
 }
 
 export default SearchKeywordTextField

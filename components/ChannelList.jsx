@@ -20,7 +20,7 @@ const styles = {
 
 const ChannelList = ({ channels, onSearchChannel, onChannelClick }) => (
     <div style={styles.root}>
-        <SearchKeywordTextField onSearch={onSearchChannel} />
+        <SearchKeywordTextField onSearch={onSearchChannel} placeholder="search channel" />
         <GridList
             cellHeight={200}
             style={styles.gridList}
