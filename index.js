@@ -64,8 +64,10 @@ const createPlayerWindow = (callback) => {
         height: windowHeight,
         x: width - windowWidth,
         y: height - windowHeight,
-        frame: false
+        frame: false,
+        show: playerDisplayState
     });
+
     playerWindow.loadURL('file://' + __dirname + '/player.html');
     playerWindow.on('closed', () => {
         playerWindow = null;
@@ -74,12 +76,6 @@ const createPlayerWindow = (callback) => {
         callback();
     });
     playerWindow.setAlwaysOnTop(true);
-
-    if (playerDisplayState === true) {
-        playerWindow.show();
-    } else {
-        playerWindow.hide();
-    }
 };
 
 // 認証用ウィンドウ表示処理
