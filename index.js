@@ -86,7 +86,6 @@ const createAuthWindow = (callback) => {
     
     authWindow = new BrowserWindow({width: 800, height: 600});
     authWindow.loadURL(authUrl);
-    authWindow.openDevTools();
     authWindow.on('closed', () => {
         authWindow = null;
     });
@@ -243,13 +242,13 @@ app.on('activate', () => {
 
 // 再生プレイヤーを表示
 ipcMain.on('toggle-player', async(event, display) => {
-    playerDisplayState = display; 
+    playerDisplayState = display;
     if (playerWindow != null) {
         if (playerDisplayState === true) {
-	   playerWindow.show(); 
-	} else {
-	   playerWindow.hide(); 
-	}
+            playerWindow.show();
+        } else {
+           playerWindow.hide();
+        }
     }
     event.sender.send('toggle-player', playerDisplayState);
 });
