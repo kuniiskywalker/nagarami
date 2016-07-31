@@ -37,8 +37,11 @@ const clearPreviewVideoTimer = () => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onSearchVideo: (keyword) => {
-            dispatch(send('search-video', keyword));
+        onSearchVideo: (keyword, sort) => {
+            dispatch(send('search-video', {
+                keyword: keyword,
+                sort: sort
+            }));
         },
         onPlayVideo: (video) => {
             dispatch(send('select-video', video));

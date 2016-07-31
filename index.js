@@ -303,10 +303,10 @@ ipcMain.on('search-channel', async(event, q) => {
 });
 
 // 動画を検索
-ipcMain.on('search-video', async(event, q) => {
+ipcMain.on('search-video', async(event, args) => {
     try {
         await refreshToken();
-        const videos = await youtubeClient.searchVideo(apikey, q);
+        const videos = await youtubeClient.searchVideo(apikey, args.keyword, args.sort);
         event.sender.send('search-video', videos);
     } catch (error) {
         console.log(error);

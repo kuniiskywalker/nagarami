@@ -120,13 +120,13 @@ YoutubeClient.prototype.searchChannel = function(apikey, q) {
 }
 
 // 動画検索
-YoutubeClient.prototype.searchVideo = function(apikey, q) {
+YoutubeClient.prototype.searchVideo = function(apikey, q, order) {
     return new Promise((resolve, reject) => {
         youtube.search.list({
             part: 'snippet',
             q: q,
             type: 'video',
-            order: 'date',
+            order: order,
             maxResults: 50,
             key: apikey
         }, function (a, result, response) {
