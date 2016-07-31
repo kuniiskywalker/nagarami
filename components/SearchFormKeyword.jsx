@@ -32,6 +32,7 @@ class SearchFormKeyword extends React.Component {
                 onKeyDown={this.handleKeyDown}
                 value={this.props.keyword}
                 style={this.props.style}
+                inputStyle={{color: grey100}}
                 hintStyle={{color: grey100}}
                 floatingLabelStyle={{color: grey100}}
                 floatingLabelFocusStyle={{color: grey100}}
