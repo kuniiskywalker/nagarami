@@ -6,7 +6,9 @@ const opts = {
     height: '300',
     playerVars: {
         autoplay: 1,
-        rel: 0
+        rel: 0,
+        controls: 0,
+        showinfo: 0
     }
 };
 
