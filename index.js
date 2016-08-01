@@ -76,6 +76,11 @@ const createPlayerWindow = (callback) => {
         callback();
     });
     playerWindow.setAlwaysOnTop(true);
+
+    // プレイヤー内で外部リンクを踏んだ際の挙動を無効
+    playerWindow.webContents.on('new-window', (event, url) => {
+        event.preventDefault();
+    })
 };
 
 // 認証用ウィンドウ表示処理
