@@ -18,6 +18,9 @@ const BrowserWindow = electron.BrowserWindow;
 //Node.js側とHTML側で通信をするモジュール
 const ipcMain = electron.ipcMain;
 
+//ShortCut
+const globalShortcut = electron.globalShortcut;
+
 // スコープとアクセストークン関係
 const SCOPES = [
     'https://www.googleapis.com/auth/youtube',
@@ -208,6 +211,19 @@ const refreshToken = async() => {
    }
 };
 
+// 再生プレイヤーの表示/非表示切替
+const togglePlayer = () => {
+    playerDisplayState = !playerDisplayState;
+    if (playerWindow != null) {
+        if (playerDisplayState === true) {
+            playerWindow.show();
+        } else {
+            playerWindow.hide();
+        }
+    }
+    controllerWindow.send('toggle-player', playerDisplayState);
+}
+
 // 起動時に呼ばれるイベント
 app.on('ready', async () => {
 
@@ -223,7 +239,16 @@ app.on('ready', async () => {
         if (!isEmptySavedToken(token)) {
             youtubeClient.setToken(token);
         }
-        createControllerWindow(() => {});
+        createControllerWindow(() => {
+            // コントローラーウィンドウが表示されたら再生プレイヤーの状態を送信
+            controllerWindow.send('toggle-player', playerDisplayState);
+        });
+
+        // ショートカットキー：ctrl+qで再生プレイヤーの表示/非表示切替
+        globalShortcut.register('ctrl+q', function() {
+            togglePlayer();
+        });
+
     } catch(error) {
         console.log( error );
         dialog.showErrorBox("application error", "Please notify the kuniiskywalker@gmail.com");
@@ -246,16 +271,8 @@ app.on('activate', () => {
 // 非同期プロセス通信
 
 // 再生プレイヤーを表示
-ipcMain.on('toggle-player', async(event, display) => {
-    playerDisplayState = display;
-    if (playerWindow != null) {
-        if (playerDisplayState === true) {
-            playerWindow.show();
-        } else {
-           playerWindow.hide();
-        }
-    }
-    event.sender.send('toggle-player', playerDisplayState);
+ipcMain.on('toggle-player', async(event) => {
+    togglePlayer();
 });
 
 // 認証ページを開く

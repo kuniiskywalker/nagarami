@@ -8,8 +8,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onToggleDisplay: (display) => {
-            dispatch(send('toggle-player', !display));
+        onToggleDisplay: () => {
+            dispatch(send('toggle-player'));
         }
     }
 }
