@@ -1,3 +1,4 @@
+// IPCで登録チャンネル一覧をうけとるアクション
 export function fetchSubscription(event, subscriptions) {
     const data = subscriptions.map((channel, i) => {
         const value = channel.snippet;
@@ -11,6 +12,8 @@ export function fetchSubscription(event, subscriptions) {
     })
     return {type: 'FETCH_SUBSCRIPTION', subscriptions: data}
 }
+
+// IPCで検索したチャンネル一覧をうけとるアクション
 export function searchChannel(event, channels) {
     const data = channels.map((channel, i) => {
         return {
@@ -23,6 +26,8 @@ export function searchChannel(event, channels) {
     })
     return {type: 'SEARCH_CHANNEL', channels: data}
 }
+
+// IPCで検索したプレイリストうけとるアクション
 export function searchPlaylist(event, playlists) {
     const data = playlists.map((playlist, i) => {
         return {
@@ -37,18 +42,10 @@ export function searchPlaylist(event, playlists) {
     })
     return {type: 'SEARCH_PLAYLIST', playlists: data}
 }
+
+// IPCで検索したプレイリストうけとるアクション
 export function searchVideo(event, videos) {
-    const data = videos.map((video, i) => {
-        return {
-            id: video.id.videoId,
-            title: video.snippet.title,
-            description: video.snippet.description,
-            thumbnail: video.snippet.thumbnails.high.url
-        }
-    }).filter((element) => {
-        return element.id != "" && element.id != undefined
-    })
-    return {type: 'SEARCH_VIDEO', videos: data}
+    return {type: 'SEARCH_VIDEO', videos: videos}
 }
 export function playVideo(event, video) {
     return {type: 'PLAY_VIDEO', player: {
@@ -57,7 +54,7 @@ export function playVideo(event, video) {
 }
 export function togglePlayer(event, display) {
     return {type: 'TOGGLE_PLAYER', player: {
-        display: display 
+        display: display
     }}
 }
 export function startPreviewVideo(videoId, thumbnail) {

@@ -120,19 +120,41 @@ YoutubeClient.prototype.searchChannel = function(apikey, q) {
 }
 
 // 動画検索
-YoutubeClient.prototype.searchVideo = function(apikey, q, order) {
+YoutubeClient.prototype.searchVideoId = function(apikey, q, order) {
     return new Promise((resolve, reject) => {
         youtube.search.list({
-            part: 'snippet',
+            part: 'id',
             q: q,
             type: 'video',
+            safeSearch: 'strict',
+            videoEmbeddable: true,
+            videoSyndicated: true,
             order: order,
+            maxResults: 50,
+            key: apikey
+        }, (a, result, response) => {
+            resolve(result.items);
+        }, () => {
+            reject(a);
+        });
+    }).then((data) => {
+        return data.map((a) => {
+            return a.id.videoId;
+        })
+    });
+}
+
+YoutubeClient.prototype.searchVideo = function(apikey, id) {
+    return new Promise((resolve, reject) => {
+        youtube.videos.list({
+            part: 'id, snippet, statistics',
+            id: id,
             maxResults: 50,
             key: apikey
         }, function (a, result, response) {
             resolve(result.items);
         });
-    });
+    })
 }
 
 // プレイリスト検索
