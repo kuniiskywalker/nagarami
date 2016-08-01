@@ -60,17 +60,18 @@ export function togglePlayer(event, display) {
         display: display 
     }}
 }
-
-
 export function startPreviewVideo(videoId, thumbnail) {
     return {type: 'START_PREVIEW_VIDEO', id: videoId, thumbnail: thumbnail}
 }
 export function stopPreviewVideo(videoId, thumbnail) {
     return {type: 'STOP_PREVIEW_VIDEO', id: videoId, thumbnail: thumbnail}
 }
-
 export function authorization(event, is_logged_in) {
     return {type: 'AUTHORIZATION', auth: {
         is_logged_in: is_logged_in
     }}
+}
+
+export function setSearchConditions(condition) {
+    return {type: 'SET_SEARCH_CONDITIONS', searchConditions: condition}
 }

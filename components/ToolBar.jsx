@@ -1,104 +1,67 @@
 import React, { PropTypes, Component } from 'react';
 
 import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
 
-import Drawer from 'material-ui/Drawer';
+import Popover from 'material-ui/Popover';
 
-import Avatar from 'material-ui/Avatar';
 import {List, ListItem} from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
-import Divider from 'material-ui/Divider';
-import CommunicationChatBubble from 'material-ui/svg-icons/communication/chat-bubble';
 
-import LoginButton from './LoginButton.js'
-import LogoutButton from './LogoutButton.js'
+import ActionGrade from 'material-ui/svg-icons/action/grade';
+import AvVideoLibrary from 'material-ui/svg-icons/av/video-library';
+
+import VisibleSearchFormKeyword from '../containers/VisibleSearchFormKeyword'
 
 class ToolBar extends React.Component {
     
     constructor(props) {
         super(props);
+
         this.state = {open: false};
-        this.handleToggle  = this.handleToggle.bind(this);
-        this.handleClose  = this.handleClose.bind(this);
+
+        this.handleTouchTap = this.handleTouchTap.bind(this);
+        this.handleRequestClose = this.handleRequestClose.bind(this);
     }
 
-    handleToggle() {
-        this.setState({open: !this.state.open});
+    handleTouchTap(event) {
+        // This prevents ghost click.
+        event.preventDefault();
+
+        this.setState({
+            open: true,
+            anchorEl: event.currentTarget,
+        });
     }
 
-    handleClose() {
-        this.setState({open: false});
+    handleRequestClose() {
+        this.setState({
+            open: false,
+        });
     }
-    
+
     render() {
 
-        const { is_logged_in, onOpenAuthPage, onLogout } = this.props;
-
-        let leftElement;
-        
-        let rightElement;
-        
-        if(is_logged_in){
-
-            leftElement = (
-                <div>
-                    <IconMenu
-                        iconButtonElement={
-                            <IconButton><MoreVertIcon /></IconButton>
-                            }
-                        targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                    >
-                        <MenuItem primaryText="My channel" onClick={this.handleToggle} />
-                    </IconMenu>
-                    <Drawer
-                        docked={false}
-                        width={200}
-                        open={this.state.open}
-                        onRequestChange={(open) => this.setState({open})}
-                    >
-                        <List>
-                            <Subheader>My channel</Subheader>
-                        </List>
-                    </Drawer>
-                </div>
-            )
-            
-            rightElement = <LogoutButton onLogout={onLogout} />
-        } else {
-
-            leftElement = (
-                <IconMenu
-                    iconButtonElement={
-                        <IconButton><MoreVertIcon /></IconButton>
-                        }
-                    targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                >
-                </IconMenu>
-            )
-
-            rightElement = <LoginButton onOpenAuthPage={onOpenAuthPage} />
-        }
-
         return (
-            <AppBar
-                title="NAGARAMI"
-                iconElementLeft={leftElement}
-                iconElementRight={rightElement}
-            />
+            <div>
+                <AppBar
+                    title="NAGARAMI"
+                    onLeftIconButtonTouchTap={this.handleTouchTap}
+                    iconElementRight={<VisibleSearchFormKeyword style={{marginTop: "-20px"}} />}
+                />
+                <Popover
+                    open={this.state.open}
+                    anchorEl={this.state.anchorEl}
+                    anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                    targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                    onRequestClose={this.handleRequestClose}
+                    >
+                    <List>
+                        <ListItem primaryText="登録チャンネル" leftIcon={<AvVideoLibrary />} />
+                        <ListItem primaryText="お気に入り" leftIcon={<ActionGrade />} />
+                    </List>
+                </Popover>
+            </div>
         );
     }
 }
 
-ToolBar.propTypes = {
-    is_logged_in: PropTypes.bool.isRequired,
-    onOpenAuthPage: PropTypes.func.isRequired,
-    onLogout: PropTypes.func.isRequired
-}
 export default ToolBar

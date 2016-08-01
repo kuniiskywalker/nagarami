@@ -1,11 +1,7 @@
 import React, { PropTypes } from 'react'
-import SearchKeywordTextField from './SearchKeywordTextField'
 import Video from './Video'
 
-import {GridList, GridTile} from 'material-ui/GridList';
-import IconButton from 'material-ui/IconButton';
-import Subheader from 'material-ui/Subheader';
-import StarBorder from 'material-ui/svg-icons/toggle/star-border';
+import {GridList} from 'material-ui/GridList';
 
 const styles = {
     root: {
@@ -21,9 +17,8 @@ const styles = {
     }
 };
 
-const VideoList = ({ videos, onSearchVideo, onPlayVideo, onStartPreviewVideo, onStopPreviewVideo }) => (
+const VideoList = ({ videos, onPlayVideo, onStartPreviewVideo, onStopPreviewVideo }) => (
     <div style={styles.root}>
-        <SearchKeywordTextField onSearch={onSearchVideo} placeholder="search video" />
         <GridList
             cellHeight={200}
             style={styles.gridList}
@@ -47,7 +42,6 @@ VideoList.propTypes = {
         description: PropTypes.string.isRequired,
         thumbnail: PropTypes.string.isRequired
     }).isRequired).isRequired,
-    onSearchVideo: PropTypes.func.isRequired,
     onPlayVideo: PropTypes.func.isRequired,
     onStartPreviewVideo: PropTypes.func.isRequired,
     onStopPreviewVideo: PropTypes.func.isRequired
