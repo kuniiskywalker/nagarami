@@ -6,6 +6,7 @@ import Popover from 'material-ui/Popover';
 
 import {List, ListItem} from 'material-ui/List';
 
+import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionGrade from 'material-ui/svg-icons/action/grade';
 import AvVideoLibrary from 'material-ui/svg-icons/av/video-library';
 
@@ -55,6 +56,7 @@ class ToolBar extends React.Component {
                     onRequestClose={this.handleRequestClose}
                     >
                     <List>
+                        <ListItem primaryText="ダッシュボード" leftIcon={<ActionHome />} />
                         <ListItem primaryText="登録チャンネル" leftIcon={<AvVideoLibrary />} />
                         <ListItem primaryText="お気に入り" leftIcon={<ActionGrade />} />
                     </List>
