@@ -1,6 +1,6 @@
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import createIpc, { send } from 'redux-electron-ipc';
-import ToolBar from '../components/ToolBar'
+import ToolBar from '../components/ToolBar';
 
 const mapStateToProps = (state) => {
     return state.auth

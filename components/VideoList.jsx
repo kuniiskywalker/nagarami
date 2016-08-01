@@ -1,5 +1,6 @@
-import React, { PropTypes } from 'react'
-import Video from './Video'
+import React, { PropTypes } from 'react';
+
+import Video from './Video';
 
 import {GridList} from 'material-ui/GridList';
 

@@ -1,5 +1,5 @@
-import { connect } from 'react-redux'
-import TogglePlayerButton from '../components/TogglePlayerButton'
+import { connect } from 'react-redux';
+import TogglePlayerButton from '../components/TogglePlayerButton';
 import createIpc, { send } from 'redux-electron-ipc';
 
 function mapStateToProps(state) {

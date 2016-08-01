@@ -1,9 +1,10 @@
 import React from 'react';
-import { Route, IndexRoute } from 'react-router';
-import Controller from './components/Controller'
+import { Router, Route, IndexRoute } from 'react-router';
 
-import Dashboard from './containers/Dashboard'
-import SearchVideoPage from './containers/SearchVideoPage'
+import Controller from './components/Controller';
+
+import Dashboard from './containers/Dashboard';
+import SearchVideoPage from './containers/SearchVideoPage';
 
 export default (
     <Route path="/" component={Controller}>

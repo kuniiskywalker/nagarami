@@ -1,8 +1,8 @@
-import React, { PropTypes } from 'react'
+import React, { PropTypes } from 'react';
 
-import VisibleSearchFormSort from './VisibleSearchFormSort'
+import VisibleSearchFormSort from './VisibleSearchFormSort';
 
-import VisibleVideoList from './VisibleVideoList'
+import VisibleVideoList from './VisibleVideoList';
 
 const SearchVideoList = ({}) => (
     <div>

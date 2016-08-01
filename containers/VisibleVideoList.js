@@ -1,7 +1,7 @@
-import { connect } from 'react-redux'
-import VideoList from '../components/VideoList'
+import { connect } from 'react-redux';
+import VideoList from '../components/VideoList';
 import createIpc, { send } from 'redux-electron-ipc';
-import { startPreviewVideo, stopPreviewVideo } from '../actions'
+import { startPreviewVideo, stopPreviewVideo } from '../actions';
 
 function mapStateToProps(state) {
     return {
@@ -37,12 +37,12 @@ const clearPreviewVideoTimer = () => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onSearchVideo: (keyword, sort) => {
-            dispatch(send('search-video', {
-                keyword: keyword,
-                sort: sort
-            }));
-        },
+        //onSearchVideo: (keyword, sort) => {
+        //    dispatch(send('search-video', {
+        //        keyword: keyword,
+        //        sort: sort
+        //    }));
+        //},
         onPlayVideo: (video) => {
             dispatch(send('select-video', video));
         },

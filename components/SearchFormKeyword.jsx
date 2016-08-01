@@ -18,6 +18,7 @@ class SearchFormKeyword extends React.Component {
 
     handleEnterKeyDown(e) {
         this.props.submit();
+        this.props.routerActions.push("search");
     }
 
     render() {
@@ -44,7 +45,8 @@ class SearchFormKeyword extends React.Component {
 SearchFormKeyword.propTypes = {
     keyword: PropTypes.string.isRequired,
     changeValue: PropTypes.func.isRequired,
-    submit: PropTypes.func.isRequired
+    submit: PropTypes.func.isRequired,
+    routerActions: PropTypes.object.isRequired
 }
 
 export default SearchFormKeyword

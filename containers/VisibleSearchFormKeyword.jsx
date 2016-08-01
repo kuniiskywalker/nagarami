@@ -1,8 +1,11 @@
-import { connect } from 'react-redux'
-import createIpc, { send } from 'redux-electron-ipc';
-import SearchFormKeyword from '../components/SearchFormKeyword'
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { routerActions } from 'react-router-redux';
 
-import { setSearchConditions } from '../actions'
+import createIpc, { send } from 'redux-electron-ipc';
+import SearchFormKeyword from '../components/SearchFormKeyword';
+
+import { setSearchConditions } from '../actions';
 
 function mapStateToProps(state) {
     return state.searchConditions
@@ -21,7 +24,8 @@ const mapDispatchToProps = (dispatch) => {
                 keyword: this.keyword,
                 sort: this.sort
             }));
-        }
+        },
+        routerActions: bindActionCreators( Object.assign({}, routerActions), dispatch)
     }
 }
 

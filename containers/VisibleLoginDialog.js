@@ -1,6 +1,6 @@
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import createIpc, { send } from 'redux-electron-ipc';
-import LoginDialog from '../components/LoginDialog'
+import LoginDialog from '../components/LoginDialog';
 
 const mapStateToProps = (state) => {
     return state.auth

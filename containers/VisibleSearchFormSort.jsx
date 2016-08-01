@@ -1,8 +1,8 @@
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import createIpc, { send } from 'redux-electron-ipc';
-import SearchFormSort from '../components/SearchFormSort'
+import SearchFormSort from '../components/SearchFormSort';
 
-import { setSearchConditions } from '../actions'
+import { setSearchConditions } from '../actions';
 
 function mapStateToProps(state) {
     return state.searchConditions
