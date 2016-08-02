@@ -330,18 +330,7 @@ ipcMain.on('search-video', async(event, args) => {
         await refreshToken();
         const videoIds = await youtubeClient.searchVideoId(apikey, args.keyword, args.sort);
         const videos = await youtubeClient.searchVideo(apikey, videoIds.toString());
-        const data = videos.map((video, i) => {
-            return {
-                id: video.id,
-                title: video.snippet.title,
-                thumbnail: video.snippet.thumbnails.high.url,
-                description: video.snippet.description,
-                viewCount: video.statistics.viewCount
-            }
-        }).filter((element) => {
-            return element.id != "" && element.id != undefined
-        })
-        event.sender.send('search-video', data);
+        event.sender.send('search-video', videos);
     } catch (error) {
         console.log(error);
     }

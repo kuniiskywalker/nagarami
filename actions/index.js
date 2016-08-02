@@ -45,7 +45,20 @@ export function searchPlaylist(event, playlists) {
 
 // IPCで検索したプレイリストうけとるアクション
 export function searchVideo(event, videos) {
-    return {type: 'SEARCH_VIDEO', videos: videos}
+    const data = videos.map((video, i) => {
+        return {
+            id: video.id,
+            title: video.snippet.title,
+            thumbnail: video.snippet.thumbnails.high.url,
+            description: video.snippet.description,
+            viewCount: video.statistics.viewCount,
+            likeCount: video.statistics.likeCount,
+            dislikeCount: video.statistics.dislikeCount
+        }
+    }).filter((element) => {
+        return element.id != "" && element.id != undefined
+    })
+    return {type: 'SEARCH_VIDEO', videos: data}
 }
 export function playVideo(event, video) {
     return {type: 'PLAY_VIDEO', player: {
