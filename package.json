@@ -29,6 +29,7 @@
     "babel-register": "^6.9.0",
     "electron-json-storage": "^2.0.0",
     "material-ui": "^0.15.2",
+    "numeral": "^1.5.3",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "react-redux": "^4.0.0",

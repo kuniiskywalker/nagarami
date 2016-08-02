@@ -2,11 +2,13 @@ import React, { PropTypes } from 'react';
 
 import {GridList, GridTile} from 'material-ui/GridList';
 
+import numeral from 'numeral';
+
 const Video = ({ id, title, thumbnail, description, viewCount, onPlayVideoClick, onStartPreviewVideoHover, onStopPreviewVideoHover }) => (
     <GridTile
         key={id}
         title={title}
-        subtitle={<span>視聴回数 {viewCount} 回</span>}
+        subtitle={<span>視聴回数 {numeral(viewCount).format('0,0')} 回</span>}
         onClick={onPlayVideoClick}
         onMouseOver={onStartPreviewVideoHover}
         onMouseOut={onStopPreviewVideoHover}
