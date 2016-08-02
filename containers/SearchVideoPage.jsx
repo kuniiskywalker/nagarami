@@ -6,7 +6,9 @@ import VisibleVideoList from './VisibleVideoList';
 
 const SearchVideoList = ({}) => (
     <div>
-        <VisibleSearchFormSort />
+        <div style={{marginBottom: '5px'}}>
+            <VisibleSearchFormSort />
+        </div>
         <VisibleVideoList />
     </div>
 )
