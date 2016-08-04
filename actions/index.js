@@ -52,8 +52,8 @@ export function searchVideo(event, videos) {
             thumbnail: video.snippet.thumbnails.high.url,
             description: video.snippet.description,
             viewCount: video.statistics.viewCount,
-            likeCount: video.statistics.likeCount,
-            dislikeCount: video.statistics.dislikeCount
+            likeCount: video.statistics.likeCount || '0',
+            dislikeCount: video.statistics.dislikeCount || '0'
         }
     }).filter((element) => {
         return element.id != "" && element.id != undefined

@@ -13,32 +13,34 @@ import {black, white} from 'material-ui/styles/colors';
 const styles = {
     viewCounter: {
         marginTop: "10px",
-        backgroundColor: black,
+        //backgroundColor: black,
         fontSize: 12
     },
     upDown: {
         container: {
             display: "flex",
-            "justify-content": "flex-end"
+            justifyContent: "flex-end"
         },
         item: {
             marginRight: 10
         },
         icon: {
-            marginRight: 5
+            marginRight: 5,
+            width: 13,
+            height: 13,
+            paddingTop: 2
         }
     }
 };
 
 const Video = ({ id, title, thumbnail, description, viewCount, likeCount, dislikeCount, onPlayVideoClick, onStartPreviewVideoHover, onStopPreviewVideoHover }) => {
-    
     const subtitle = (
         <div>
             <div style={styles.viewCounter}>視聴回数 {numeral(viewCount).format('0,0')} 回</div>
             <Divider />
             <div style={styles.upDown.container}>
-                <div style={styles.upDown.item}><ActionThumbUp color={white} style={styles.upDown.icon} />{numeral(likeCount).format('0,0')}</div>
-                <div style={styles.upDown.item}><ActionThumbDown color={white} style={styles.upDown.icon} />{numeral(dislikeCount).format('0,0')}</div>
+                <div style={styles.upDown.item}><ActionThumbUp color={white} style={styles.upDown.icon} />like {numeral(likeCount).format('0,0')}</div>
+                <div style={styles.upDown.item}><ActionThumbDown color={white} style={styles.upDown.icon} />dislike {numeral(dislikeCount).format('0,0')}</div>
             </div>
         </div>
     )
