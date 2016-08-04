@@ -4,7 +4,10 @@ import AppBar from 'material-ui/AppBar';
 
 import Popover from 'material-ui/Popover';
 
-import {List, ListItem} from 'material-ui/List';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
+
+//import {List, ListItem} from 'material-ui/List';
 
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionGrade from 'material-ui/svg-icons/action/grade';
@@ -19,23 +22,32 @@ class ToolBar extends React.Component {
 
         this.state = {open: false};
 
+        this.handleChange = this.handleChange.bind(this);
         this.handleTouchTap = this.handleTouchTap.bind(this);
         this.handleRequestClose = this.handleRequestClose.bind(this);
     }
 
+    handleChange(event, menuItem, index) {
+        event.preventDefault();
+        const route = menuItem.props.value;
+        this.props.routerActions.push(route);
+        this.setState({
+            open: false
+        });
+    }
+    
     handleTouchTap(event) {
-        // This prevents ghost click.
         event.preventDefault();
 
         this.setState({
             open: true,
-            anchorEl: event.currentTarget,
+            anchorEl: event.currentTarget
         });
     }
 
     handleRequestClose() {
         this.setState({
-            open: false,
+            open: false
         });
     }
 
@@ -55,15 +67,18 @@ class ToolBar extends React.Component {
                     targetOrigin={{horizontal: 'left', vertical: 'top'}}
                     onRequestClose={this.handleRequestClose}
                     >
-                    <List>
-                        <ListItem primaryText="ダッシュボード" leftIcon={<ActionHome />} />
-                        <ListItem primaryText="登録チャンネル" leftIcon={<AvVideoLibrary />} />
-                        <ListItem primaryText="お気に入り" leftIcon={<ActionGrade />} />
-                    </List>
+                    <Menu onItemTouchTap={this.handleChange}>
+                        <MenuItem primaryText="ダッシュボード" leftIcon={<ActionHome />} value="home" />
+                        <MenuItem primaryText="登録チャンネル" leftIcon={<AvVideoLibrary />} value="channel" />
+                        <MenuItem primaryText="プレイリスト" leftIcon={<ActionGrade />} value="playlist" />
+                    </Menu>
                 </Popover>
             </div>
         );
     }
 }
 
+ToolBar.propTypes = {
+    routerActions: PropTypes.object.isRequired
+}
 export default ToolBar

@@ -4,7 +4,7 @@ import VisibleSearchFormSort from './VisibleSearchFormSort';
 
 import VisibleVideoList from './VisibleVideoList';
 
-const SearchVideoList = ({}) => (
+const VideoPage = ({}) => (
     <div>
         <div style={{marginBottom: '5px'}}>
             <VisibleSearchFormSort />
@@ -13,4 +13,4 @@ const SearchVideoList = ({}) => (
     </div>
 )
 
-export default SearchVideoList
+export default VideoPage

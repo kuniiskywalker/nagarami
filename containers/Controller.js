@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
-import VisibleLoginDialog from '../containers/VisibleLoginDialog';
-import VisibleToolBar from '../containers/VisibleToolBar';
-import VisibleTogglePlayerButton from '../containers/VisibleTogglePlayerButton';
+import VisibleLoginDialog from './VisibleLoginDialog';
+import VisibleToolBar from './VisibleToolBar';
+import VisibleTogglePlayerButton from './VisibleTogglePlayerButton';
 
 const Controller = ({ children }) => {
     return (

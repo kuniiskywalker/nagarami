@@ -1,5 +1,8 @@
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import createIpc, { send } from 'redux-electron-ipc';
+import { routerActions } from 'react-router-redux';
+
 import ToolBar from '../components/ToolBar';
 
 const mapStateToProps = (state) => {
@@ -13,7 +16,8 @@ const mapDispatchToProps = (dispatch) => {
         },
         onLogout: () => {
             dispatch(send('logout'));
-        }
+        },
+        routerActions: bindActionCreators( Object.assign({}, routerActions), dispatch)
     }
 }
 

@@ -18,7 +18,7 @@ class SearchFormKeyword extends React.Component {
 
     handleEnterKeyDown(e) {
         this.props.submit();
-        this.props.routerActions.push("search");
+        this.props.routerActions.push("video");
     }
 
     render() {
