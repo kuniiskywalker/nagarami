@@ -1,6 +1,6 @@
 {
   "name": "nagarami",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "electron app",
   "main": "bootstrapper.js",
   "author": "glassonion1",
