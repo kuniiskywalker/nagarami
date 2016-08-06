@@ -111,7 +111,7 @@ const createControllerWindow = (callback) => {
     }
     controllerWindow = new BrowserWindow({width: 550, height: 720});
     controllerWindow.loadURL('file://' + __dirname + '/controller.html');
-    controllerWindow.openDevTools();
+    // controllerWindow.openDevTools();
     controllerWindow.on('closed', () => {
         app.quit();
     });
