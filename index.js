@@ -59,8 +59,8 @@ const createPlayerWindow = (callback) => {
         return;
     }
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
-    const windowWidth = 420;
-    const windowHeight = 320;
+    const windowWidth = Math.ceil(width * 0.25);
+    const windowHeight = Math.ceil(height * 0.3);
 
     playerWindow = new BrowserWindow({
         width: windowWidth,
@@ -72,6 +72,7 @@ const createPlayerWindow = (callback) => {
     });
 
     playerWindow.loadURL('file://' + __dirname + '/player.html');
+    // playerWindow.openDevTools();
     playerWindow.on('closed', () => {
         playerWindow = null;
     });

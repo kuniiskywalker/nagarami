@@ -3,7 +3,7 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { applyMiddleware, createStore } from 'redux';
 import todoApp from './reducers'
-import { playVideo } from './actions'
+import { playVideo, changeScreenSize } from './actions'
 import VisiblePlayer from './containers/VisiblePlayer'
 
 import createIpc, { send } from 'redux-electron-ipc';
@@ -23,3 +23,5 @@ render(
   </Provider>,
   document.getElementById('root')
 );
+
+store.dispatch(changeScreenSize(window.innerWidth, window.innerHeight));

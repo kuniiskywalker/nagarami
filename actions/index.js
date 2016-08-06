@@ -85,3 +85,13 @@ export function authorization(event, is_logged_in) {
 export function setSearchConditions(condition) {
     return {type: 'SET_SEARCH_CONDITIONS', searchConditions: condition}
 }
+
+export const changeScreenSize = (width, height) => {
+  return {
+    type: 'CHANGE_SCREEN_SIZE',
+    player: {
+        width: width,
+        height: height
+    }
+  };
+};

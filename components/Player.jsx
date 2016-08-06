@@ -2,8 +2,6 @@ import React, { PropTypes } from 'react'
 import YouTube from 'react-youtube'
 
 const opts = {
-    width: '400',
-    height: '300',
     playerVars: {
         autoplay: 1,
         rel: 0,
@@ -11,15 +9,21 @@ const opts = {
     }
 };
 
-const Player = ({id}) => (
-    <YouTube
-        videoId={id}
-        opts={opts}
-    />
-)
+const Player = ({id, width, height}) => {
+    let param = Object.assign({}, opts, {
+        width: width,
+        height: height 
+    });
+     
+    if (id) {
+        return <YouTube videoId={id} opts={param} />
+    }
+}
 
 Player.propTypes = {
-    id: PropTypes.string.isRequired
+    id: PropTypes.string.isRequired,
+    width: PropTypes.number,
+    height: PropTypes.number
 }
 
 export default Player
