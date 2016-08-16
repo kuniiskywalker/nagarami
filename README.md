@@ -6,6 +6,7 @@ $ npm run start
 
 ## Build
 ```
+$ npm i webpack -g
 $ npm i electron-packager -g
 $ npm run build
 ```
