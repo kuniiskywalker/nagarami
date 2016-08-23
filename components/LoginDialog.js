@@ -11,10 +11,11 @@ class LoginDialog extends React.Component {
     constructor(props) {
         super(props);
 
-        this.login = this.login.bind(this);
+        this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
+        this.handleAuthenticationSubmit = this.handleAuthenticationSubmit.bind(this);
     }
-
-    login(e) {
+    
+    handleLoginSubmit(e) {
         const { onAuthToken } = this.props;
         const code = ReactDOM.findDOMNode(this.refs.code.input).value;
         if (!code) {
@@ -24,18 +25,24 @@ class LoginDialog extends React.Component {
         this.setState({open: false});
     }
 
+    handleAuthenticationSubmit(e) {
+        e.preventDefault();
+        const { onOpenAuthPage } = this.props;
+        onOpenAuthPage()
+    }
+    
     render() {
 
-        const { onOpenAuthPage, is_logged_in } = this.props;
+        const { isLoggedIn } = this.props;
 
-        const open = is_logged_in === false? true: false;
+        const open = isLoggedIn === false? true: false;
 
         const actions = [
             <FlatButton
                 label="Ok"
                 primary={true}
                 keyboardFocused={true}
-                onClick={this.login}
+                onClick={this.handleLoginSubmit}
             />
         ];
 
@@ -51,10 +58,7 @@ class LoginDialog extends React.Component {
                     <FlatButton
                         label="get code!"
                         secondary={true}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            onOpenAuthPage()
-                        }}
+                        onClick={this.handleAuthenticationSubmit}
                     />
                     <TextField
                         hintText="code"
@@ -69,7 +73,7 @@ class LoginDialog extends React.Component {
 }
 
 LoginDialog.propTypes = {
-    is_logged_in: PropTypes.bool.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
     onOpenAuthPage: PropTypes.func.isRequired,
     onAuthToken: PropTypes.func.isRequired
 }

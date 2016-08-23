@@ -76,9 +76,9 @@ export function startPreviewVideo(videoId, thumbnail) {
 export function stopPreviewVideo(videoId, thumbnail) {
     return {type: 'STOP_PREVIEW_VIDEO', id: videoId, thumbnail: thumbnail}
 }
-export function authorization(event, is_logged_in) {
+export function authorization(event, isLoggedIn) {
     return {type: 'AUTHORIZATION', auth: {
-        is_logged_in: is_logged_in
+        isLoggedIn: isLoggedIn
     }}
 }
 

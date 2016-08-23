@@ -39,11 +39,7 @@ let TogglePlayerButton = ({display, onToggleDisplay}) => {
         )
     }
 
-    return (
-        <div>
-            { button }
-        </div>
-    )
+    return button
 }
 
 TogglePlayerButton.propTypes = {
