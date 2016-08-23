@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import VisibleLoginDialog from './VisibleLoginDialog';
 import VisibleToolBar from './VisibleToolBar';
-import VisibleTogglePlayerButton from './VisibleTogglePlayerButton';
+import TogglePlayerButton from './TogglePlayerButton';
 
 const Controller = ({ children }) => {
     return (
@@ -13,7 +13,7 @@ const Controller = ({ children }) => {
             <div>
                 {children}
             </div>
-            <VisibleTogglePlayerButton />
+            <TogglePlayerButton />
         </div>
     )
 }
