@@ -7,33 +7,35 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 
-//import {List, ListItem} from 'material-ui/List';
-
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionGrade from 'material-ui/svg-icons/action/grade';
 import AvVideoLibrary from 'material-ui/svg-icons/av/video-library';
 
-import VisibleSearchFormKeyword from '../containers/VisibleSearchFormKeyword'
+import VisibleSearchFormKeyword from '../containers/VisibleSearchFormKeyword';
+
+import VisibleSubscriptionList from '../containers/VisibleSubscriptionList';
 
 class ToolBar extends React.Component {
     
     constructor(props) {
         super(props);
 
-        this.state = {open: false};
-
-        this.handleChange = this.handleChange.bind(this);
+        this.state = {
+            open: false,
+            subscriptionOpen: false
+        };
+        
+        // メニュータップ時の表示イベント
         this.handleTouchTap = this.handleTouchTap.bind(this);
-        this.handleRequestClose = this.handleRequestClose.bind(this);
-    }
 
-    handleChange(event, menuItem, index) {
-        event.preventDefault();
-        const route = menuItem.props.value;
-        this.props.routerActions.push(route);
-        this.setState({
-            open: false
-        });
+        // メニュータップ時の非表示イベント
+        this.handleRequestClose = this.handleRequestClose.bind(this);
+
+        // メニュー選択時のイベント
+        this.handleChange = this.handleChange.bind(this);
+
+        // 登録チャンネルメニュー閉じるイベント
+        this.handleCloseSubscriptionMenu = this.handleCloseSubscriptionMenu.bind(this);
     }
     
     handleTouchTap(event) {
@@ -51,8 +53,22 @@ class ToolBar extends React.Component {
         });
     }
 
+    handleChange(event, menuItem, index) {
+        event.preventDefault();
+        this.setState({
+            open: false,
+            subscriptionOpen: true
+        });
+    }
+    
+    handleCloseSubscriptionMenu() {
+        this.setState({
+            open: false,
+            subscriptionOpen: false
+        });
+    }
+    
     render() {
-
         return (
             <div>
                 <AppBar
@@ -69,10 +85,13 @@ class ToolBar extends React.Component {
                     >
                     <Menu onItemTouchTap={this.handleChange}>
                         <MenuItem primaryText="ダッシュボード" leftIcon={<ActionHome />} value="home" />
-                        <MenuItem primaryText="登録チャンネル" leftIcon={<AvVideoLibrary />} value="channel" />
-                        <MenuItem primaryText="プレイリスト" leftIcon={<ActionGrade />} value="playlist" />
+                        <MenuItem primaryText="登録チャンネル" leftIcon={<AvVideoLibrary />} value="subscription" />
                     </Menu>
                 </Popover>
+                <VisibleSubscriptionList
+                    open={this.state.subscriptionOpen}
+                    onCloseMenu={this.handleCloseSubscriptionMenu}
+                />
             </div>
         );
     }

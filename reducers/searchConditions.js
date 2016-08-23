@@ -1,4 +1,4 @@
-const initialState = {keyword: "", sort: "date"};
+const initialState = {channelId: "", keyword: "", sort: "date"};
 
 const searchConditions = (state = initialState, action) => {
     const { searchConditions } = action;

@@ -174,17 +174,28 @@ YoutubeClient.prototype.searchPlaylist = function(apikey, q) {
 }
 
 // チャンネル動画取得
-YoutubeClient.prototype.fetchChannelVideo = function(apikey, channelId) {
+YoutubeClient.prototype.fetchChannelVideo = function(apikey, channelId, order) {
     return new Promise((resolve, reject) => {
         youtube.search.list({
-            part: 'snippet',
+            part: 'id',
             channelId: channelId,
+            type: 'video',
+            safeSearch: 'strict',
+            videoEmbeddable: true,
+            videoSyndicated: true,
+            order: order,
             maxResults: 50,
             key: apikey
-        }, function (a, result, response) {
+        }, (a, result, response) => {
             resolve(result.items);
+        }, () => {
+            reject(a);
         });
-    });
+    }).then((data) => {
+            return data.map((a) => {
+                return a.id.videoId;
+            })
+        });
 }
 
 module.exports = YoutubeClient
