@@ -1,5 +1,10 @@
+import { connect } from 'react-redux';
 import React, { PropTypes } from 'react'
 import YouTube from 'react-youtube'
+
+function mapStateToProps(state) {
+    return state.player
+}
 
 const opts = {
     playerVars: {
@@ -12,9 +17,9 @@ const opts = {
 const Player = ({id, width, height}) => {
     let param = Object.assign({}, opts, {
         width: width,
-        height: height 
+        height: height
     });
-     
+
     if (id) {
         return <YouTube videoId={id} opts={param} />
     }
@@ -26,4 +31,5 @@ Player.propTypes = {
     height: PropTypes.number
 }
 
-export default Player
+export default connect(mapStateToProps)(Player)
+
