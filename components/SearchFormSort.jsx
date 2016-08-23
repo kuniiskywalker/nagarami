@@ -45,33 +45,3 @@ SearchFormSort.propTypes = {
 }
 
 export default SearchFormSort
-
-
-
-//class SearchFormSort extends React.Component {
-//    constructor(props) {
-//        super(props);
-//        this.handleChange = this.handleChange.bind(this);
-//    }
-//
-//    handleChange(value) {
-//        this.props.changeValue('sort', value);
-//    }
-//
-//    render() {
-//        return (
-//            <Tabs onChange={this.handleChange} value={this.props.value}>
-//                <Tab label="最新順" value="date" />
-//                <Tab label="人気順" value="rating" />
-//                <Tab label="再生数順" value="viewCount" />
-//            </Tabs>
-//        );
-//    }
-//}
-//
-//SearchFormSort.propTypes = {
-//    value: PropTypes.string.isRequired,
-//    changeValue: PropTypes.func.isRequired
-//}
-//
-//export default SearchFormSort
