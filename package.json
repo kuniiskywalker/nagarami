@@ -11,8 +11,10 @@
     "url": "git@bitbucket.org:k-family/nagarami-desktop.git"
   },
   "scripts": {
-    "start": "wabpack & electron .",
-    "build": "electron-packager ./ nagarami --platform=win32 --arch=x64 --version=1.2.2 --prune"
+    "start": "electron .",
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "package": "electron-packager ./ nagarami --platform=win32 --arch=x64 --version=1.2.2 --prune"
   },
   "keywords": [
     "electron",
