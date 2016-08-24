@@ -329,19 +329,7 @@ ipcMain.on('search-channel', async(event, q) => {
 ipcMain.on('search-video', async(event, args) => {
     try {
         await refreshToken();
-        const videoIds = await youtubeClient.searchVideoId(apikey, args.keyword, args.sort);
-        const videos = await youtubeClient.searchVideo(apikey, videoIds.toString());
-        event.sender.send('search-video', videos);
-    } catch (error) {
-        console.log(error);
-    }
-});
-
-// チャンネル動画を取得
-ipcMain.on('fetch-channel-video', async(event, args) => {
-    try {
-        await refreshToken();
-        const videoIds = await youtubeClient.fetchChannelVideo(apikey, args.channelId, args.sort);
+        const videoIds = await youtubeClient.searchVideoId(apikey, args);
         const videos = await youtubeClient.searchVideo(apikey, videoIds.toString());
         event.sender.send('search-video', videos);
     } catch (error) {

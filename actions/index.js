@@ -81,11 +81,24 @@ export function authorization(event, isLoggedIn) {
         isLoggedIn: isLoggedIn
     }}
 }
-
-export function setSearchConditions(condition) {
-    return {type: 'SET_SEARCH_CONDITIONS', searchConditions: condition}
+export function setSearchKeyword(keyword) {
+    return {type: 'SET_SEARCH_KEYWORD', searchConditions: {
+        channelId: "",
+        keyword: keyword
+    }}
 }
-
+export function setSearchChannelId(channelId) {
+    return {type: 'SET_SEARCH_CHANNEL_ID', searchConditions: {
+        channelId: channelId,
+        keyword: "",
+        sort: "date"
+    }}
+}
+export function setSearchSort(sort) {
+    return {type: 'SET_SEARCH_SORT', searchConditions: {
+        sort: sort
+    }}
+}
 export const changeScreenSize = (width, height) => {
   return {
     type: 'CHANGE_SCREEN_SIZE',

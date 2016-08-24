@@ -119,20 +119,28 @@ YoutubeClient.prototype.searchChannel = function(apikey, q) {
     });
 }
 
-// 動画検索
-YoutubeClient.prototype.searchVideoId = function(apikey, q, order) {
+// 動画ID検索
+YoutubeClient.prototype.searchVideoId = function(apikey, conditions) {
     return new Promise((resolve, reject) => {
-        youtube.search.list({
+        let params = {
             part: 'id',
-            q: q,
             type: 'video',
             safeSearch: 'strict',
             videoEmbeddable: true,
             videoSyndicated: true,
-            order: order,
             maxResults: 50,
             key: apikey
-        }, (a, result, response) => {
+        };
+        if (conditions.keyword) {
+            params['q'] = conditions.keyword;
+        }
+        if (conditions.channelId) {
+            params['channelId'] = conditions.channelId;
+        }
+        if (conditions.sort) {
+            params['order'] = conditions.sort;
+        }
+        youtube.search.list(params, (a, result, response) => {
             resolve(result.items);
         }, () => {
             reject(a);
@@ -171,31 +179,6 @@ YoutubeClient.prototype.searchPlaylist = function(apikey, q) {
             resolve(result.items);
         });
     });
-}
-
-// チャンネル動画取得
-YoutubeClient.prototype.fetchChannelVideo = function(apikey, channelId, order) {
-    return new Promise((resolve, reject) => {
-        youtube.search.list({
-            part: 'id',
-            channelId: channelId,
-            type: 'video',
-            safeSearch: 'strict',
-            videoEmbeddable: true,
-            videoSyndicated: true,
-            order: order,
-            maxResults: 50,
-            key: apikey
-        }, (a, result, response) => {
-            resolve(result.items);
-        }, () => {
-            reject(a);
-        });
-    }).then((data) => {
-            return data.map((a) => {
-                return a.id.videoId;
-            })
-        });
 }
 
 module.exports = YoutubeClient

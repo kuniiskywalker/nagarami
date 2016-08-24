@@ -3,6 +3,8 @@ import createIpc, { send } from 'redux-electron-ipc';
 
 import SubscriptionList from '../components/SubscriptionList';
 
+import { setSearchChannelId } from '../actions';
+
 const mapStateToProps = (state) => {
     return {
         subscriptions: state.subscriptions
@@ -18,7 +20,8 @@ const mapDispatchToProps = (dispatch) => {
             if (!channelId) {
                 return false;
             }
-            dispatch(send('fetch-channel-video', {
+            dispatch(setSearchChannelId(channelId));
+            dispatch(send('search-video', {
                 channelId: channelId,
                 sort: "date"
             }));

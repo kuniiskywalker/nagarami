@@ -5,7 +5,7 @@ import { routerActions } from 'react-router-redux';
 import createIpc, { send } from 'redux-electron-ipc';
 import SearchFormKeyword from '../components/SearchFormKeyword';
 
-import { setSearchConditions } from '../actions';
+import { setSearchKeyword } from '../actions';
 
 function mapStateToProps(state) {
     return state.searchConditions
@@ -14,7 +14,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = (dispatch) => {
     return {
         changeValue(val) {
-            dispatch(setSearchConditions({"keyword": val}));
+            dispatch(setSearchKeyword(val));
         },
         submit() {
             if (!this.keyword) {
