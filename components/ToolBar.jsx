@@ -7,8 +7,6 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 
-import ActionHome from 'material-ui/svg-icons/action/home';
-import ActionGrade from 'material-ui/svg-icons/action/grade';
 import AvVideoLibrary from 'material-ui/svg-icons/av/video-library';
 
 import VisibleSearchFormKeyword from '../containers/VisibleSearchFormKeyword';
@@ -84,7 +82,6 @@ class ToolBar extends React.Component {
                     onRequestClose={this.handleRequestClose}
                     >
                     <Menu onItemTouchTap={this.handleChange}>
-                        <MenuItem primaryText="ダッシュボード" leftIcon={<ActionHome />} value="home" />
                         <MenuItem primaryText="登録チャンネル" leftIcon={<AvVideoLibrary />} value="subscription" />
                     </Menu>
                 </Popover>

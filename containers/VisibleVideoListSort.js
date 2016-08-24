@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import createIpc, { send } from 'redux-electron-ipc';
-import SearchFormSort from '../components/SearchFormSort';
+import VideoListSort from '../components/VideoListSort';
 
-import { setSearchConditions } from '../actions';
+import { setSearchSort } from '../actions';
 
 function mapStateToProps(state) {
     return state.searchConditions
@@ -11,11 +11,12 @@ function mapStateToProps(state) {
 const mapDispatchToProps = (dispatch) => {
     return {
         changeValue(val) {
-            dispatch(setSearchConditions({"sort": val}));
-            if (!this.keyword) {
+            dispatch(setSearchSort(val));
+            if (!this.keyword && !this.channelId) {
                 return false;
             }
             dispatch(send('search-video', {
+                channelId: this.channelId,
                 keyword: this.keyword,
                 sort: val
             }));
@@ -23,9 +24,9 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-const VisibleSearchFormSort = connect(
+const VisibleVideoListSort = connect(
     mapStateToProps,
     mapDispatchToProps
-)(SearchFormSort)
+)(VideoListSort)
 
-export default VisibleSearchFormSort
+export default VisibleVideoListSort

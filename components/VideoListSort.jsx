@@ -18,7 +18,7 @@ const styles = {
     }
 };
 
-class SearchFormSort extends React.Component {
+class VideoListSort extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -39,9 +39,9 @@ class SearchFormSort extends React.Component {
     }
 }
 
-SearchFormSort.propTypes = {
+VideoListSort.propTypes = {
     sort: PropTypes.string.isRequired,
     changeValue: PropTypes.func.isRequired
 }
 
-export default SearchFormSort
+export default VideoListSort

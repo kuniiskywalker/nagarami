@@ -1,13 +1,13 @@
 import React, { PropTypes } from 'react';
 
-import VisibleSearchFormSort from './VisibleSearchFormSort';
+import VisibleVideoListSort from './VisibleVideoListSort';
 
 import VisibleVideoList from './VisibleVideoList';
 
 const VideoPage = ({}) => (
     <div>
         <div style={{marginBottom: '5px'}}>
-            <VisibleSearchFormSort />
+            <VisibleVideoListSort />
         </div>
         <VisibleVideoList />
     </div>

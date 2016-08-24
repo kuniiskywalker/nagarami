@@ -25,15 +25,23 @@ class SubscriptionList extends Component {
         const { open } = props;
         
         this.state = {open: open};
+
+        this.handleClick = this.handleClick.bind(this);
     }
 
     componentWillMount() {
         const { fetchSubscriptions } = this.props;
         fetchSubscriptions();
     }
-
+    
+    handleClick(channelId) {
+        const { onCloseMenu, onSubscriptionClick } = this.props;
+        onSubscriptionClick(channelId);
+        onCloseMenu();
+    }
+    
     render() {
-        const { subscriptions, open, onCloseMenu, onSubscriptionClick } = this.props;
+        const { subscriptions, open, onCloseMenu } = this.props;
 
         return (
             <Drawer
@@ -47,10 +55,7 @@ class SubscriptionList extends Component {
                         <Subscription
                             key={subscription.id}
                             {...subscription}
-                            handleSubscriptionClick={() => {
-                                onSubscriptionClick(subscription.id);
-                                onCloseMenu();
-                            }}
+                            onSubscriptionClick={() => this.handleClick(subscription.id)}
                         />
                     )}
                 </List>
