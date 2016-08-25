@@ -38,7 +38,7 @@ const clearPreviewVideoTimer = () => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onPlayVideo: (video) => {
-            dispatch(send('select-video', video));
+            dispatch(send('play-video', video));
         },
         onStartPreviewVideo: (videoId, thumbnail) => {
             defaultThumbnail = thumbnail;

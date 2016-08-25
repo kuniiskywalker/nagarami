@@ -8,10 +8,12 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 
 import AvVideoLibrary from 'material-ui/svg-icons/av/video-library';
+import ActionGrade from 'material-ui/svg-icons/action/grade';
 
 import VisibleSearchFormKeyword from '../containers/VisibleSearchFormKeyword';
 
 import SubscriptionMenu from '../containers/SubscriptionMenu';
+import PlaylistMenu from '../containers/PlaylistMenu';
 
 class ToolBar extends React.Component {
     
@@ -20,7 +22,8 @@ class ToolBar extends React.Component {
 
         this.state = {
             open: false,
-            subscriptionOpen: false
+            subscriptionOpen: false,
+            playlistOpen: false
         };
         
         // メニュータップ時の表示イベント
@@ -34,6 +37,9 @@ class ToolBar extends React.Component {
 
         // 登録チャンネルメニュー閉じるイベント
         this.handleCloseSubscriptionMenu = this.handleCloseSubscriptionMenu.bind(this);
+
+        // 登録プレイリストメニュー閉じるイベント
+        this.handleClosePlaylistMenu = this.handleClosePlaylistMenu.bind(this);
     }
     
     handleTouchTap(event) {
@@ -53,16 +59,32 @@ class ToolBar extends React.Component {
 
     handleChange(event, menuItem, index) {
         event.preventDefault();
-        this.setState({
-            open: false,
-            subscriptionOpen: true
-        });
+        const menu = menuItem.props.value;
+        let params = {open: false};
+        switch(menu) {
+            case 'subscription': {
+                params['subscriptionOpen'] = true;
+                break;
+            }
+            case 'playlist': {
+                params['playlistOpen'] = true;
+                break;
+            }
+        }
+        this.setState(params);
     }
     
     handleCloseSubscriptionMenu() {
         this.setState({
             open: false,
             subscriptionOpen: false
+        });
+    }
+
+    handleClosePlaylistMenu() {
+        this.setState({
+            open: false,
+            playlistOpen: false
         });
     }
     
@@ -83,11 +105,16 @@ class ToolBar extends React.Component {
                     >
                     <Menu onItemTouchTap={this.handleChange}>
                         <MenuItem primaryText="登録チャンネル" leftIcon={<AvVideoLibrary />} value="subscription" />
+                        <MenuItem primaryText="プレイリスト" leftIcon={<ActionGrade />} value="playlist" />
                     </Menu>
                 </Popover>
-                <VisibleSubscriptionList
+                <SubscriptionMenu
                     open={this.state.subscriptionOpen}
                     onCloseMenu={this.handleCloseSubscriptionMenu}
+                />
+                <PlaylistMenu
+                    open={this.state.playlistOpen}
+                    onCloseMenu={this.handleClosePlaylistMenu}
                 />
             </div>
         );

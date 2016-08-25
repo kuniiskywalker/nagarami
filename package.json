@@ -14,7 +14,8 @@
     "start": "electron .",
     "build": "webpack",
     "watch": "webpack --watch",
-    "package": "electron-packager ./ nagarami --platform=win32 --arch=x64 --version=1.2.2 --prune"
+    "pack:win": "electron-packager ./ nagarami --platform=win32 --arch=x64 --version=1.2.2 --prune",
+    "pack:mac": "electron-packager ./ nagarami --platform=darwin --arch=x64 --version=1.2.2 --prune"
   },
   "keywords": [
     "electron",

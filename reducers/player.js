@@ -10,6 +10,8 @@ const player = (state = initialState, action) => {
             });
         case 'PLAY_VIDEO':
             return Object.assign({}, state, player);
+        case 'PLAY_PLAYLIST':
+            return Object.assign({}, state, player);
         case 'TOGGLE_PLAYER':
             return Object.assign({}, state, {
                 display: player.display

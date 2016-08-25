@@ -103,6 +103,34 @@ YoutubeClient.prototype.fetchSubscriptions = function(apikey) {
     });
 }
 
+// 自分のプレイリストを取得
+YoutubeClient.prototype.fetchPlaylists = function(apikey) {
+    return new Promise((resolve, reject) => {
+        youtube.playlists.list({
+            part: 'snippet',
+            mine: true,
+            maxResults: 50,
+            key: apikey
+        }, function (a, result, response) {
+            resolve(result.items);
+        });
+    });
+}
+
+// プレイリスト動画を取得
+YoutubeClient.prototype.fetchPlaylistVideos = function(apikey, playlistId) {
+    return new Promise((resolve, reject) => {
+        youtube.playlistItems.list({
+            part: 'snippet',
+            playlistId: playlistId,
+            maxResults: 50,
+            key: apikey
+        }, function (a, result, response) {
+            resolve(result.items);
+        });
+    });
+}
+
 // チャンネル検索
 YoutubeClient.prototype.searchChannel = function(apikey, q) {
     return new Promise((resolve, reject) => {
@@ -152,6 +180,7 @@ YoutubeClient.prototype.searchVideoId = function(apikey, conditions) {
     });
 }
 
+// 動画検索
 YoutubeClient.prototype.searchVideo = function(apikey, id) {
     return new Promise((resolve, reject) => {
         youtube.videos.list({

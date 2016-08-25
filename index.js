@@ -314,12 +314,12 @@ ipcMain.on('fetch-subscriptions', async(event, ...args) => {
     }
 });
 
-// チャンネルを検索
-ipcMain.on('search-channel', async(event, q) => {
+// 自分のプレイリスト取得
+ipcMain.on('fetch-playlists', async(event, ...args) => {
     try {
         await refreshToken();
-        const channels = await youtubeClient.searchChannel(apikey, q);
-        event.sender.send('search-channel', channels);
+        const playlists = await youtubeClient.fetchPlaylists(apikey);
+        event.sender.send('fetch-playlists', playlists);
     } catch (error) {
         console.log(error);
     }
@@ -337,22 +337,24 @@ ipcMain.on('search-video', async(event, args) => {
     }
 });
 
-// プレイリストを検索
-ipcMain.on('search-playlist', async(event, q) => {
-    try {
-        await refreshToken();
-        const playlist = await youtubeClient.searchPlaylist(apikey, q);
-        event.sender.send('search-playlist', playlist);
-    } catch (error) {
-        console.log(error);
-    }
-});
-
 // 再生する動画を選択
-ipcMain.on('select-video', (event, video) => {
+ipcMain.on('play-video', (event, video) => {
     createPlayerWindow(() => {
         playerWindow.send('play-video', video);
     });
+});
+
+// 再生するプレイリストを選択
+ipcMain.on('play-playlist', async(event, playlistId) => {
+    try {
+        await refreshToken();
+        const videos = await youtubeClient.fetchPlaylistVideos(apikey, playlistId);
+        createPlayerWindow(() => {
+            playerWindow.send('play-playlist', videos);
+        });
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 // 認証トークンをセット
@@ -388,13 +390,3 @@ ipcMain.on('check-authorization', async(event) => {
     }
 });
 
-// チャンネル動画取得
-ipcMain.on('fetch-channel-videos', async(event, channelId) => {
-    try {
-        await refreshToken();
-        const videos = await youtubeClient.fetchChannelVideo(apikey, channelId);
-        event.sender.send('search-video', videos);
-    } catch (error) {
-        console.log(error);
-    }
-});

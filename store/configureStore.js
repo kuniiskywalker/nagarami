@@ -6,7 +6,7 @@ import { routerMiddleware } from 'react-router-redux';
 import createIpc, { send } from 'redux-electron-ipc';
 import rootReducer from '../reducers';
 
-import { fetchSubscription, searchChannel, searchPlaylist, searchVideo, togglePlayer, authorization } from '../actions'
+import { fetchSubscription, fetchPlaylists, searchVideo, togglePlayer, authorization } from '../actions'
 
 const logger = createLogger({
     level: 'info',
@@ -23,8 +23,7 @@ const enhancer = compose(
 // store
 const ipc = createIpc({
     'fetch-subscriptions': fetchSubscription,
-    'search-channel': searchChannel,
-    'search-playlist': searchPlaylist,
+    'fetch-playlists': fetchPlaylists,
     'search-video': searchVideo,
     'toggle-player': togglePlayer,
     'authorization': authorization

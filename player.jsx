@@ -3,14 +3,15 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { applyMiddleware, createStore } from 'redux';
 import todoApp from './reducers'
-import { playVideo, changeScreenSize } from './actions'
+import { playVideo, playPlaylist, changeScreenSize } from './actions'
 import Player from './containers/Player'
 
 import createIpc, { send } from 'redux-electron-ipc';
 
 // store
 const ipc = createIpc({
-  'play-video': playVideo
+  'play-video': playVideo,
+  'play-playlist': playPlaylist
 });
 const store = createStore(todoApp, applyMiddleware(ipc));
 

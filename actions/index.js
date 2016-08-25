@@ -13,35 +13,50 @@ export function fetchSubscription(event, subscriptions) {
     return {type: 'FETCH_SUBSCRIPTION', subscriptions: data}
 }
 
-// IPCで検索したチャンネル一覧をうけとるアクション
-export function searchChannel(event, channels) {
-    const data = channels.map((channel, i) => {
-        return {
-            id: channel.snippet.channelId,
-            title: channel.snippet.channelTitle,
-            thumbnail: channel.snippet.thumbnails.high.url
-        }
-    }).filter((element) => {
-        return element.id != ""
-    })
-    return {type: 'SEARCH_CHANNEL', channels: data}
-}
-
-// IPCで検索したプレイリストうけとるアクション
-export function searchPlaylist(event, playlists) {
+// IPCで登録プレイリストをうけとるアクション
+export function fetchPlaylists(event, playlists) {
     const data = playlists.map((playlist, i) => {
         return {
-            id: playlist.id.playlistId,
-            channelId: playlist.snippet.channelId,
-            title: playlist.snippet.channelTitle,
+            id: playlist.id,
+            title: playlist.snippet.title,
             description: playlist.snippet.description,
             thumbnail: playlist.snippet.thumbnails.default.url
         }
     }).filter((element) => {
         return element.id != "" && element.id != undefined
     })
-    return {type: 'SEARCH_PLAYLIST', playlists: data}
+    return {type: 'FETCH_PLAYLIST', playlists: data};
 }
+
+//// IPCで検索したチャンネル一覧をうけとるアクション
+//export function searchChannel(event, channels) {
+//    const data = channels.map((channel, i) => {
+//        return {
+//            id: channel.snippet.channelId,
+//            title: channel.snippet.channelTitle,
+//            thumbnail: channel.snippet.thumbnails.high.url
+//        }
+//    }).filter((element) => {
+//        return element.id != ""
+//    })
+//    return {type: 'SEARCH_CHANNEL', channels: data}
+//}
+//
+//// IPCで検索したプレイリストうけとるアクション
+//export function searchPlaylist(event, playlists) {
+//    const data = playlists.map((playlist, i) => {
+//        return {
+//            id: playlist.id.playlistId,
+//            channelId: playlist.snippet.channelId,
+//            title: playlist.snippet.channelTitle,
+//            description: playlist.snippet.description,
+//            thumbnail: playlist.snippet.thumbnails.default.url
+//        }
+//    }).filter((element) => {
+//        return element.id != "" && element.id != undefined
+//    })
+//    return {type: 'SEARCH_PLAYLIST', playlists: data}
+//}
 
 // IPCで検索したプレイリストうけとるアクション
 export function searchVideo(event, videos) {
@@ -62,7 +77,20 @@ export function searchVideo(event, videos) {
 }
 export function playVideo(event, video) {
     return {type: 'PLAY_VIDEO', player: {
-        id: video.id
+        id: video.id,
+        playlist: ""
+    }}
+}
+export function playPlaylist(event, videos) {
+    let videoIds = videos.map((video, i) => {
+        return video.snippet.resourceId.videoId
+    })
+    const videoId = videoIds.shift();
+    const playlist = videoIds.toString();
+
+    return {type: 'PLAY_PLAYLIST', player: {
+        id: videoId,
+        playlist: playlist
     }}
 }
 export function togglePlayer(event, display) {
@@ -105,6 +133,5 @@ export const changeScreenSize = (width, height) => {
     player: {
         width: width,
         height: height
-    }
-  };
-};
+    }}
+}
