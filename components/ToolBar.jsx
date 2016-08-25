@@ -11,7 +11,7 @@ import AvVideoLibrary from 'material-ui/svg-icons/av/video-library';
 
 import VisibleSearchFormKeyword from '../containers/VisibleSearchFormKeyword';
 
-import VisibleSubscriptionList from '../containers/VisibleSubscriptionList';
+import SubscriptionMenu from '../containers/SubscriptionMenu';
 
 class ToolBar extends React.Component {
     
