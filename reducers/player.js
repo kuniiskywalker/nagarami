@@ -3,11 +3,6 @@ const initialState = {id: "0", display: true, width: 0, height: 0, playlist: [],
 const player = (state = initialState, action) => {
     const { player } = action;
     switch (action.type) {
-        case 'CHANGE_SCREEN_SIZE':
-            return Object.assign({}, state, {
-                width: player.width - 16,
-                height: player.height - 16
-            });
         case 'PLAY_VIDEO':
             return Object.assign({}, state, player);
         case 'PLAY_PLAYLIST':

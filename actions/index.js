@@ -130,11 +130,3 @@ export function setSearchSort(sort) {
         sort: sort
     }}
 }
-export const changeScreenSize = (width, height) => {
-  return {
-    type: 'CHANGE_SCREEN_SIZE',
-    player: {
-        width: width,
-        height: height
-    }}
-}

@@ -24,5 +24,3 @@ render(
   </Provider>,
   document.getElementById('root')
 );
-
-store.dispatch(changeScreenSize(window.innerWidth, window.innerHeight));

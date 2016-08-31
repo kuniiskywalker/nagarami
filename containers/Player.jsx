@@ -12,6 +12,11 @@ const mapDispatchToProps = (dispatch) => {
     return {
         nextVideoPlay: () => {
             dispatch(playNextVideoInPlaylist());
+        },
+        onReadyPlay: (e) => {
+            e.target.a.style.position = "absolute";
+            e.target.a.style.top = 0;
+            e.target.a.style.right = 0;
         }
     }
 }
@@ -24,17 +29,17 @@ const opts = {
     }
 };
 
-const Player = ({id, width, height, nextVideoPlay}) => {
+const Player = ({id, width, height, nextVideoPlay, onReadyPlay}) => {
     let param = Object.assign({}, opts, {
-        width: width,
-        height: height
+        width: "100%",
+        height: "100%"
     });
-
     if (id) {
         return <YouTube
             videoId={id}
             opts={param}
             onEnd={nextVideoPlay}
+            onReady={onReadyPlay}
         />
     }
 }
@@ -43,7 +48,8 @@ Player.propTypes = {
     id: PropTypes.string.isRequired,
     width: PropTypes.number,
     height: PropTypes.number,
-    nextVideoPlay: PropTypes.func.isRequired
+    nextVideoPlay: PropTypes.func.isRequired,
+    onReadyPlay: PropTypes.func.isRequired
 }
 
 export default connect(
