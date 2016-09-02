@@ -14,9 +14,14 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(playNextVideoInPlaylist());
         },
         onReadyPlay: (e) => {
-            e.target.a.style.position = "absolute";
-            e.target.a.style.top = 0;
-            e.target.a.style.right = 0;
+            const iframe = e.target.a;
+            iframe.style.position = "absolute";
+            iframe.style.top = 0;
+            iframe.style.right = 0;
+        },
+        onVideoPlay: (e) => {
+            let iframe = e.target.a;
+            iframe.contentWindow.document.querySelector('.video-ads').style.display = 'none'
         }
     }
 }
@@ -29,7 +34,7 @@ const opts = {
     }
 };
 
-const Player = ({id, width, height, nextVideoPlay, onReadyPlay}) => {
+const Player = ({id, width, height, nextVideoPlay, onReadyPlay, onVideoPlay}) => {
     let param = Object.assign({}, opts, {
         width: "100%",
         height: "100%"
@@ -40,6 +45,7 @@ const Player = ({id, width, height, nextVideoPlay, onReadyPlay}) => {
             opts={param}
             onEnd={nextVideoPlay}
             onReady={onReadyPlay}
+            onPlay={onVideoPlay}
         />
     }
 }
@@ -49,7 +55,8 @@ Player.propTypes = {
     width: PropTypes.number,
     height: PropTypes.number,
     nextVideoPlay: PropTypes.func.isRequired,
-    onReadyPlay: PropTypes.func.isRequired
+    onReadyPlay: PropTypes.func.isRequired,
+    onVideoPlay: PropTypes.func.isRequired
 }
 
 export default connect(
