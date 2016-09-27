@@ -1,11 +1,10 @@
 module.exports = {
     entry: {
-        "controller": "./controller.jsx",
-        "player": "./player.jsx"
+        "player": "./src/index.jsx"
     },
     output: {
-        path: './build/',
-        filename: "[name].js"
+        path: './public/assets/js/',
+        filename: "bundle.js"
     },
     target: 'atom',
     module: {

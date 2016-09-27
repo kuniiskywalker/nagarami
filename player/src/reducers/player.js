@@ -24,10 +24,6 @@ const player = (state = initialState, action) => {
                 id: videoId,
                 playlistIndex: state.playlistIndex + 1
             });
-        case 'TOGGLE_PLAYER':
-            return Object.assign({}, state, {
-                display: player.display
-            });
         default:
             return state
     }

@@ -71,7 +71,7 @@ const createPlayerWindow = (callback) => {
         show: playerDisplayState
     });
 
-    playerWindow.loadURL('file://' + __dirname + '/player.html');
+    playerWindow.loadURL('file://' + __dirname + '/player/public/index.html');
     // playerWindow.openDevTools();
     playerWindow.on('closed', () => {
         playerWindow = null;
@@ -110,7 +110,7 @@ const createControllerWindow = (callback) => {
         return;
     }
     controllerWindow = new BrowserWindow({width: 550, height: 720});
-    controllerWindow.loadURL('file://' + __dirname + '/controller.html');
+    controllerWindow.loadURL('file://' + __dirname + '/controller/public/index.html');
     // controllerWindow.openDevTools();
     controllerWindow.on('closed', () => {
         app.quit();

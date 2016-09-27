@@ -52,4 +52,5 @@ dist/
 
 *.BAK
 
-build/*
+controller/public/assets/js/*
+player/public/assets/js/*

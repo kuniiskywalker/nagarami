@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import keycode from 'keycode';
 import TextField from 'material-ui/TextField';
 
-import {grey100} from '../node_modules/material-ui/styles/colors';
+import {grey100} from 'material-ui/styles/colors';
 
 class SearchFormKeyword extends React.Component {
     constructor(props) {

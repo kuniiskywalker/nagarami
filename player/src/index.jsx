@@ -3,7 +3,7 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { applyMiddleware, createStore } from 'redux';
 import todoApp from './reducers'
-import { playVideo, playPlaylist, changeScreenSize } from './actions'
+import { playVideo, playPlaylist } from './actions'
 import Player from './containers/Player'
 
 import createIpc, { send } from 'redux-electron-ipc';
