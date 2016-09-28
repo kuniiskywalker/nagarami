@@ -3,8 +3,6 @@ import createIpc, { send } from 'redux-electron-ipc';
 
 import PlaylistList from '../components/PlaylistList';
 
-//import { setSearchChannelId } from '../actions';
-
 const mapStateToProps = (state) => {
     return {
         playlists: state.playlists
@@ -21,7 +19,6 @@ const mapDispatchToProps = (dispatch) => {
                 return false;
             }
             dispatch(send('play-playlist', playlistId));
-            
         }
     }
 }

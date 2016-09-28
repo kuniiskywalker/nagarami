@@ -7,6 +7,7 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 
+import ActionHome from 'material-ui/svg-icons/action/home';
 import AvVideoLibrary from 'material-ui/svg-icons/av/video-library';
 import ActionGrade from 'material-ui/svg-icons/action/grade';
 
@@ -36,12 +37,13 @@ class ToolBar extends React.Component {
         this.handleChange = this.handleChange.bind(this);
 
         // 登録チャンネルメニュー閉じるイベント
-        this.handleCloseSubscriptionMenu = this.handleCloseSubscriptionMenu.bind(this);
+        this.handleClickSubscriptionMenu = this.handleClickSubscriptionMenu.bind(this);
 
         // 登録プレイリストメニュー閉じるイベント
-        this.handleClosePlaylistMenu = this.handleClosePlaylistMenu.bind(this);
+        this.handleClickPlaylistMenu = this.handleClickPlaylistMenu.bind(this);
     }
-    
+
+    // 総合メニュー開く処理
     handleTouchTap(event) {
         event.preventDefault();
 
@@ -51,37 +53,51 @@ class ToolBar extends React.Component {
         });
     }
 
+    // 総合メニュー閉じる処理
     handleRequestClose() {
         this.setState({
             open: false
         });
     }
-
+    
+    // 総合メニュー内のメニューアイテムクリック時の処理
     handleChange(event, menuItem, index) {
         event.preventDefault();
+        
         const menu = menuItem.props.value;
-        let params = {open: false};
+        
+        // サイドメニュー自体の閉じた状態に遷移
+        this.setState({open: false});
+        
         switch(menu) {
+            case 'home': {
+                const { routerActions } = this.props;
+                routerActions.push("/");
+                break;
+            }
             case 'subscription': {
-                params['subscriptionOpen'] = true;
+                // 自分のプレイリストメニューを開く用の状態
+                this.setState({subscriptionOpen: true});
                 break;
             }
             case 'playlist': {
-                params['playlistOpen'] = true;
+                // 自分のプレイリストメニューを開く用の状態
+                this.setState({playlistOpen: true});
                 break;
             }
         }
-        this.setState(params);
     }
-    
-    handleCloseSubscriptionMenu() {
+
+    // チャンネルメニュー内のチャンネルをクリックしたときの処理
+    handleClickSubscriptionMenu() {
         this.setState({
             open: false,
             subscriptionOpen: false
         });
     }
 
-    handleClosePlaylistMenu() {
+    // プレイリストメニュー内のプレイリストをクリックしたときの処理
+    handleClickPlaylistMenu() {
         this.setState({
             open: false,
             playlistOpen: false
@@ -104,17 +120,18 @@ class ToolBar extends React.Component {
                     onRequestClose={this.handleRequestClose}
                     >
                     <Menu onItemTouchTap={this.handleChange}>
+                        <MenuItem primaryText="ダッシュボード" leftIcon={<ActionHome />} value="home" />
                         <MenuItem primaryText="登録チャンネル" leftIcon={<AvVideoLibrary />} value="subscription" />
                         <MenuItem primaryText="プレイリスト" leftIcon={<ActionGrade />} value="playlist" />
                     </Menu>
                 </Popover>
                 <SubscriptionMenu
                     open={this.state.subscriptionOpen}
-                    onCloseMenu={this.handleCloseSubscriptionMenu}
+                    onClickMenu={this.handleClickSubscriptionMenu}
                 />
                 <PlaylistMenu
                     open={this.state.playlistOpen}
-                    onCloseMenu={this.handleClosePlaylistMenu}
+                    onClickMenu={this.handleClickPlaylistMenu}
                 />
             </div>
         );

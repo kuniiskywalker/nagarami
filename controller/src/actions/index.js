@@ -28,36 +28,6 @@ export function fetchPlaylists(event, playlists) {
     return {type: 'FETCH_PLAYLIST', playlists: data};
 }
 
-//// IPCで検索したチャンネル一覧をうけとるアクション
-//export function searchChannel(event, channels) {
-//    const data = channels.map((channel, i) => {
-//        return {
-//            id: channel.snippet.channelId,
-//            title: channel.snippet.channelTitle,
-//            thumbnail: channel.snippet.thumbnails.high.url
-//        }
-//    }).filter((element) => {
-//        return element.id != ""
-//    })
-//    return {type: 'SEARCH_CHANNEL', channels: data}
-//}
-//
-//// IPCで検索したプレイリストうけとるアクション
-//export function searchPlaylist(event, playlists) {
-//    const data = playlists.map((playlist, i) => {
-//        return {
-//            id: playlist.id.playlistId,
-//            channelId: playlist.snippet.channelId,
-//            title: playlist.snippet.channelTitle,
-//            description: playlist.snippet.description,
-//            thumbnail: playlist.snippet.thumbnails.default.url
-//        }
-//    }).filter((element) => {
-//        return element.id != "" && element.id != undefined
-//    })
-//    return {type: 'SEARCH_PLAYLIST', playlists: data}
-//}
-
 // IPCで検索したプレイリストうけとるアクション
 export function searchVideo(event, videos) {
     const data = videos.map((video, i) => {

@@ -35,20 +35,21 @@ class SubscriptionList extends Component {
     }
     
     handleClick(channelId) {
-        const { onCloseMenu, onSubscriptionClick } = this.props;
+        const { onClickMenu, onSubscriptionClick, routerActions } = this.props;
         onSubscriptionClick(channelId);
-        onCloseMenu();
+        routerActions.push("video");
+        onClickMenu();
     }
     
     render() {
-        const { subscriptions, open, onCloseMenu } = this.props;
+        const { subscriptions, open, onClickMenu } = this.props;
 
         return (
             <Drawer
                 docked={false}
                 width={200}
                 open={open}
-                onRequestChange={onCloseMenu}
+                onRequestChange={onClickMenu}
             >
                 <List>
                     {subscriptions.map((subscription, i) =>
@@ -73,6 +74,6 @@ SubscriptionList.propTypes = {
     open: PropTypes.bool.isRequired,
     fetchSubscriptions: PropTypes.func.isRequired,
     onSubscriptionClick: PropTypes.func.isRequired,
-    onCloseMenu: PropTypes.func.isRequired
+    onClickMenu: PropTypes.func.isRequired
 }
 export default SubscriptionList

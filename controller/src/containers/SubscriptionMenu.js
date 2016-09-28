@@ -1,5 +1,7 @@
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import createIpc, { send } from 'redux-electron-ipc';
+import { routerActions } from 'react-router-redux';
 
 import SubscriptionList from '../components/SubscriptionList';
 
@@ -25,7 +27,8 @@ const mapDispatchToProps = (dispatch) => {
                 channelId: channelId,
                 sort: "date"
             }));
-        }
+        },
+        routerActions: bindActionCreators( Object.assign({}, routerActions), dispatch)
     }
 }
 

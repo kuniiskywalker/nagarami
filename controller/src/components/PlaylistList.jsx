@@ -35,20 +35,20 @@ class PlaylistList extends Component {
     }
     
     handleClick(playlistId) {
-        const { onCloseMenu, onPlaylistClick } = this.props;
+        const { onClickMenu, onPlaylistClick } = this.props;
         onPlaylistClick(playlistId);
-        onCloseMenu();
+        onClickMenu();
     }
     
     render() {
-        const { playlists, open, onCloseMenu } = this.props;
+        const { playlists, open, onClickMenu } = this.props;
 
         return (
             <Drawer
                 docked={false}
                 width={200}
                 open={open}
-                onRequestChange={onCloseMenu}
+                onRequestChange={onClickMenu}
             >
                 <List>
                     {playlists.map((playlist, i) =>
@@ -73,6 +73,6 @@ PlaylistList.propTypes = {
     open: PropTypes.bool.isRequired,
     fetchPlaylists: PropTypes.func.isRequired,
     onPlaylistClick: PropTypes.func.isRequired,
-    onCloseMenu: PropTypes.func.isRequired
+    onClickMenu: PropTypes.func.isRequired
 }
 export default PlaylistList
