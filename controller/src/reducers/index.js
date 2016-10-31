@@ -6,6 +6,7 @@ import player from './player'
 import auth from './auth'
 import subscriptions from './subscriptions'
 import searchConditions from './searchConditions'
+import toolbar from './toolbar'
 import visibilityFilter from './visibilityFilter'
 
 import { routerReducer as routing } from 'react-router-redux';
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
     auth,
     subscriptions,
     searchConditions,
+    toolbar,
     visibilityFilter,
     routing
 });

@@ -1,3 +1,27 @@
+export const OPEN_TOOLBAR = 'OPEN_TOOLBAR';
+
+export const CLOSE_TOOLBAR = 'CLOSE_TOOLBAR';
+
+export const OPEN_SUBSCRIPTION_TOOLBAR = 'OPEN_SUBSCRIPTION_TOOLBAR';
+
+export const OPEN_PLAYLIST_TOOLBAR = 'OPEN_PLAYLIST_TOOLBAR';
+
+export const openToolbar = () => ({
+    type: OPEN_TOOLBAR
+});
+
+export const closeToolbar = () => ({
+    type: CLOSE_TOOLBAR
+});
+
+export const openSubscriptionToolbar = () => ({
+    type: OPEN_SUBSCRIPTION_TOOLBAR
+});
+
+export const openPlaylistToolbar = () => ({
+    type: OPEN_PLAYLIST_TOOLBAR
+});
+
 // IPCで登録チャンネル一覧をうけとるアクション
 export function fetchSubscription(event, subscriptions) {
     const data = subscriptions.map((channel, i) => {

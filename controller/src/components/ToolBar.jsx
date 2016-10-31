@@ -20,12 +20,6 @@ class ToolBar extends React.Component {
     
     constructor(props) {
         super(props);
-
-        this.state = {
-            open: false,
-            subscriptionOpen: false,
-            playlistOpen: false
-        };
         
         // メニュータップ時の表示イベント
         this.handleTouchTap = this.handleTouchTap.bind(this);
@@ -36,38 +30,30 @@ class ToolBar extends React.Component {
         // メニュー選択時のイベント
         this.handleChange = this.handleChange.bind(this);
 
-        // 登録チャンネルメニュー閉じるイベント
-        this.handleClickSubscriptionMenu = this.handleClickSubscriptionMenu.bind(this);
-
-        // 登録プレイリストメニュー閉じるイベント
-        this.handleClickPlaylistMenu = this.handleClickPlaylistMenu.bind(this);
+        // 登録チャンネル・登録プレイリストメニュー閉じるイベント
+        this.handleCloseSubMenu = this.handleCloseSubMenu.bind(this);
     }
 
     // 総合メニュー開く処理
     handleTouchTap(event) {
         event.preventDefault();
-
-        this.setState({
-            open: true,
-            anchorEl: event.currentTarget
-        });
+        const { actions } = this.props;
+        actions.openToolbar();
     }
 
     // 総合メニュー閉じる処理
     handleRequestClose() {
-        this.setState({
-            open: false
-        });
+        const { actions } = this.props;
+        actions.closeToolbar();
     }
     
     // 総合メニュー内のメニューアイテムクリック時の処理
     handleChange(event, menuItem, index) {
         event.preventDefault();
-        
+
+        const { actions } = this.props;
+
         const menu = menuItem.props.value;
-        
-        // サイドメニュー自体の閉じた状態に遷移
-        this.setState({open: false});
         
         switch(menu) {
             case 'home': {
@@ -77,34 +63,25 @@ class ToolBar extends React.Component {
             }
             case 'subscription': {
                 // 自分のプレイリストメニューを開く用の状態
-                this.setState({subscriptionOpen: true});
+                actions.openSubscriptionToolbar();
                 break;
             }
             case 'playlist': {
                 // 自分のプレイリストメニューを開く用の状態
-                this.setState({playlistOpen: true});
+                actions.openPlaylistToolbar();
                 break;
             }
         }
     }
 
-    // チャンネルメニュー内のチャンネルをクリックしたときの処理
-    handleClickSubscriptionMenu() {
-        this.setState({
-            open: false,
-            subscriptionOpen: false
-        });
+    // チャンネルメニュー・プレイリストメニュー内のチャンネルをクリックしたときの処理
+    handleCloseSubMenu() {
+        const { actions } = this.props;
+        actions.closeToolbar();
     }
 
-    // プレイリストメニュー内のプレイリストをクリックしたときの処理
-    handleClickPlaylistMenu() {
-        this.setState({
-            open: false,
-            playlistOpen: false
-        });
-    }
-    
     render() {
+        const { open, subscriptionOpen, playlistOpen } = this.props;
         return (
             <div>
                 <AppBar
@@ -113,8 +90,7 @@ class ToolBar extends React.Component {
                     iconElementRight={<VisibleSearchFormKeyword style={{marginTop: "-20px"}} />}
                 />
                 <Popover
-                    open={this.state.open}
-                    anchorEl={this.state.anchorEl}
+                    open={open}
                     anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
                     targetOrigin={{horizontal: 'left', vertical: 'top'}}
                     onRequestClose={this.handleRequestClose}
@@ -126,12 +102,12 @@ class ToolBar extends React.Component {
                     </Menu>
                 </Popover>
                 <SubscriptionMenu
-                    open={this.state.subscriptionOpen}
-                    onClickMenu={this.handleClickSubscriptionMenu}
+                    open={subscriptionOpen}
+                    onClickMenu={this.handleCloseSubMenu}
                 />
                 <PlaylistMenu
-                    open={this.state.playlistOpen}
-                    onClickMenu={this.handleClickPlaylistMenu}
+                    open={playlistOpen}
+                    onClickMenu={this.handleCloseSubMenu}
                 />
             </div>
         );
@@ -139,6 +115,10 @@ class ToolBar extends React.Component {
 }
 
 ToolBar.propTypes = {
+    open: PropTypes.bool.isRequired,
+    subscriptionOpen: PropTypes.bool.isRequired,
+    playlistOpen: PropTypes.bool.isRequired,
+    actions: PropTypes.object.isRequired,
     routerActions: PropTypes.object.isRequired
 }
 export default ToolBar
