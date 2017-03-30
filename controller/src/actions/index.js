@@ -58,6 +58,7 @@ export function searchVideo(event, videos) {
         return {
             id: video.id,
             title: video.snippet.title,
+            publishedAt: video.snippet.publishedAt,
             thumbnail: video.snippet.thumbnails.high.url,
             description: video.snippet.description,
             viewCount: video.statistics.viewCount,

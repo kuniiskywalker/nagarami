@@ -4,6 +4,7 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import Divider from 'material-ui/Divider';
 
 import numeral from 'numeral';
+import moment from 'moment';
 
 import ActionThumbUp from 'material-ui/svg-icons/action/thumb-up';
 import ActionThumbDown from 'material-ui/svg-icons/action/thumb-down';
@@ -14,7 +15,7 @@ const styles = {
     viewCounter: {
         marginTop: "10px",
         //backgroundColor: black,
-        fontSize: 12
+        fontSize: 11
     },
     upDown: {
         container: {
@@ -33,10 +34,10 @@ const styles = {
     }
 };
 
-const Video = ({ id, title, thumbnail, description, viewCount, likeCount, dislikeCount, onPlayVideoClick, onStartPreviewVideoHover, onStopPreviewVideoHover }) => {
+const Video = ({ id, title, thumbnail, publishedAt, viewCount, likeCount, dislikeCount, onPlayVideoClick, onStartPreviewVideoHover, onStopPreviewVideoHover }) => {
     const subtitle = (
         <div>
-            <div style={styles.viewCounter}>視聴回数 {numeral(viewCount).format('0,0')} 回</div>
+            <div style={styles.viewCounter}>視聴回数 {numeral(viewCount).format('0,0')} 回 公開日 {moment(publishedAt).format("YYYY-MM-DD HH:mm")}</div>
             <Divider />
             <div style={styles.upDown.container}>
                 <div style={styles.upDown.item}><ActionThumbUp color={white} style={styles.upDown.icon} />like {numeral(likeCount).format('0,0')}</div>
@@ -63,7 +64,7 @@ Video.propTypes = {
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     thumbnail: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
+    publishedAt: PropTypes.string.isRequired,
     viewCount: PropTypes.string.isRequired,
     likeCount: PropTypes.string.isRequired,
     dislikeCount: PropTypes.string.isRequired,
