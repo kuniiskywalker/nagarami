@@ -3,11 +3,53 @@
   <head>
     <meta charset="UTF-8">
     <title>nagarami</title>
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="./css/photon.css">
+	<link rel="stylesheet" href="./style.css">
   </head>
   <body>
-    <div id="webview_wrapper">
-    <script>
+    <div class="window">
+    <header class="toolbar toolbar-header">
+    <div class="toolbar-actions">
+     <!-- リロードボタン -->
+     <button id="reload" class="btn btn-default">
+       <span class="icon icon-arrows-ccw icon-text"></span>
+       Reload
+     </button> 
+     <!-- 戻るボタン -->
+     <button id="back" class="btn btn-default">
+       <span class="icon icon-left icon-text"></span>
+       戻る
+     </button> 
+     <!-- 進むボタン -->
+     <button id="forward" class="btn btn-default">
+       <span class="icon icon-right icon-text"></span>
+       進む
+     </button> 
+     <!-- 再生ボタン -->
+     <button id="play" class="btn btn-default">
+       <span class="icon icon-play icon-text"></span>
+       再生の動画をながら見る
+     </button> 
+
+     <!-- 隠すボタン -->
+     <button id="hide" class="btn btn-default">
+       <span class="icon icon-cancel icon-text"></span>
+       隠す
+     </button> 
+
+     <!-- 表示ボタン -->
+     <button id="show" class="btn btn-default">
+       <span class="icon icon-check icon-text"></span>
+       表示する
+     </button> 
+
+    </div>
+    </header>
+      <div class="window-content">
+        <div id="webview_wrapper"></div>
+      </div>
+    </div>
+	<script>
       require('./renderer.js')
     </script>
   </body>

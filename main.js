@@ -82,7 +82,18 @@ const createPlayerWindow = (url) => {
 };
 
 // 再生する動画を選択
-ipcMain.on('playVideo', (event, video) => {
+ipcMain.on('play-video', (event, video) => {
     createPlayerWindow(video);
 });
 
+// 再生する動画を選択
+ipcMain.on('show-player', (event, video) => {
+    playerWindow.show();
+    mainWindow.send('showed-player');
+});
+
+// 再生プレイヤーを非表示
+ipcMain.on('hide-player', async(event) => {
+    playerWindow.hide();
+    mainWindow.send('hidden-player');
+});
