@@ -4,20 +4,20 @@
   "description": "An application watching youtube on a computer.",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-packager . nagarami --platform=darwin,win32 --arch=x64 --version=1.2.5"
+    "start": "electron ."
   },
   "repository": "https://github.com/kuniiskywalker/nagarami",
   "keywords": [
     "Electron",
     "youtube"
   ],
-  "author": "GitHub",
+  "author": "kuniiskywalker",
   "license": "CC0-1.0",
   "dependencies": {
     "electron-context-menu": "^0.9.1"
   },
   "devDependencies": {
-    "electron": "~1.7.8"
+    "electron": "~1.7.8",
+    "electron-packager": "^11.0.0"
   }
 }
