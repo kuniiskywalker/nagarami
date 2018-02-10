@@ -7,7 +7,6 @@ var webview = document.createElement("webview");
 webview.id = "foo";
 webview.setAttribute("src", "https://www.youtube.com");
 webview.setAttribute("preload", "inject.js");
-
 const isYoutubeMovieUrl = (url) => {
     return url.match(/https:\/\/www\.youtube\.com\/watch/).length > 0;
 }
@@ -16,6 +15,7 @@ const isYoutubeMovieUrl = (url) => {
 webview_wrapper.appendChild(webview);
 webview.addEventListener("dom-ready", function(){ 
 
+    const homeButton = document.getElementById('home');
     const reloadButton = document.getElementById('reload');
     const backButton = document.getElementById('back');
     const forwardButton = document.getElementById('forward');
@@ -32,6 +32,10 @@ webview.addEventListener("dom-ready", function(){
                 ipcRenderer.send('play-video', params.linkURL);
             }
         }]
+    });
+    // HOMEボタンをクリックしたらyoutubeトップへ
+    homeButton.addEventListener('click', () => {
+        webview.setAttribute("src", "https://www.youtube.com");
     });
     // 更新ボタンをクリックしたらwebviewをリロードする
     reloadButton.addEventListener('click', () => {
@@ -53,7 +57,13 @@ webview.addEventListener("dom-ready", function(){
         const url = webview.src;
         if (isYoutubeMovieUrl(url)) {
             webview.executeJavaScript("window.document.querySelector('video').pause()")
-            ipcRenderer.send('play-video', url);
+            webview.executeJavaScript(
+                `time: window.document.querySelector('video').currentTime`,
+                false,
+                function(time){
+                    ipcRenderer.send('resume-video', url, time);
+                }
+            );
         }
     });
 

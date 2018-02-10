@@ -44,10 +44,9 @@ app.on('activate', function () {
 })
 
 // プレイヤーウィンドウ表示処理
-const createPlayerWindow = (url) => {
+const createPlayerWindow = (url, time=0) => {
     if (playerWindow != null) {
-        playerWindow.loadURL(url);
-        return;
+        playerWindow.close();
     }
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
     const windowWidth = 426;
@@ -59,14 +58,17 @@ const createPlayerWindow = (url) => {
         y: height - windowHeight,
         frame: false
     });
-
     playerWindow.loadURL(url);
-    playerWindow.on('closed', () => {
-        playerWindow = null;
-    });
+    // playerWindow.on('closed', () => {
+    //    playerWindow = null;
+    // });
     playerWindow.webContents.on("dom-ready", () => {
+
+        console.log(1234);
+
         playerWindow.webContents.insertCSS('#top{margin: 5px!important; width: 100%;} #page-manager{margin: 0px!important} #meta{display:none} #info{display:none} #page-manager{margin: 0px} #masthead-container{display:none} #container{display:none} #related{display:none!important} #comments{display:none!important}')
-        // playerWindow.webContents.executeJavaScript("document.querySelector('#page-manager').style.margin = '0px';");
+        
+        playerWindow.webContents.executeJavaScript("document.querySelector('video').currentTime = " + time + ";");
     });
     playerWindow.setAlwaysOnTop(true);
 
@@ -74,15 +76,16 @@ const createPlayerWindow = (url) => {
     playerWindow.webContents.on('new-window', (event, url) => {
         event.preventDefault();
     })
-
-    playerWindow.on('closed', function () {
-        playerWindow = null
-    })
 };
 
 // 再生する動画を選択
 ipcMain.on('play-video', (event, video) => {
     createPlayerWindow(video);
+});
+
+// 途中から再生する動画を選択
+ipcMain.on('resume-video', (event, video, time) => {
+    createPlayerWindow(video, time);
 });
 
 // 再生する動画を選択
