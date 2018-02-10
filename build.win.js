@@ -11,7 +11,7 @@ packager({
     arch: "x64",
     version: "1.2.5",// Electronのバージョン
     overwrite: true,// 上書き
-    asar: false,// asarパッケージ化
+    asar: true,// asarパッケージ化
     "app-version": package["version"],// アプリバージョン
     "app-copyright": "Copyright (C) 2018 "+package["author"]+".",// コピーライト
     
