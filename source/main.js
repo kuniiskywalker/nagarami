@@ -50,9 +50,8 @@ const createPlayerWindow = (url) => {
         return;
     }
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
-    const windowWidth = Math.ceil(width * 0.25);
-    const windowHeight = Math.ceil(height * 0.3);
-
+    const windowWidth = 426;
+    const windowHeight = 240;
     playerWindow = new BrowserWindow({
         width: windowWidth,
         height: windowHeight,
