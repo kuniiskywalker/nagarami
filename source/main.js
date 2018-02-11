@@ -2,15 +2,16 @@ const electron = require('electron')
 const app = electron.app
 const BrowserWindow = electron.BrowserWindow
 
-const ipcMain = electron.ipcMain;
+const ipcMain = electron.ipcMain
 
 const path = require('path')
 const url = require('url')
 
 let mainWindow
 
-// プレイヤーウィンドウ
 let playerWindow
+
+let playCurrentTime = 0
 
 function createWindow() {
     mainWindow = new BrowserWindow({width: 800, height: 600})
@@ -43,59 +44,62 @@ app.on('activate', function () {
     }
 })
 
-// プレイヤーウィンドウ表示処理
 const createPlayerWindow = (url, time=0) => {
+    playCurrentTime = time;
     if (playerWindow != null) {
-        playerWindow.close();
+        playerWindow.loadURL(url);
+        return false
     }
     const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
-    const windowWidth = 426;
-    const windowHeight = 240;
+    const windowWidth = 426
+    const windowHeight = 240
     playerWindow = new BrowserWindow({
         width: windowWidth,
         height: windowHeight,
         x: width - windowWidth,
         y: height - windowHeight,
         frame: false
-    });
-    playerWindow.loadURL(url);
-    // playerWindow.on('closed', () => {
-    //    playerWindow = null;
-    // });
+    })
+    playerWindow.loadURL(url)
+    playerWindow.on('closed', () => {
+      playerWindow = null;
+    })
     playerWindow.webContents.on("dom-ready", () => {
-
-        console.log(1234);
-
         playerWindow.webContents.insertCSS('#top{margin: 5px!important; width: 100%;} #page-manager{margin: 0px!important} #meta{display:none} #info{display:none} #page-manager{margin: 0px} #masthead-container{display:none} #container{display:none} #related{display:none!important} #comments{display:none!important}')
         
-        playerWindow.webContents.executeJavaScript("document.querySelector('video').currentTime = " + time + ";");
-    });
-    playerWindow.setAlwaysOnTop(true);
-
-    // プレイヤー内で外部リンクを踏んだ際の挙動を無効
-    playerWindow.webContents.on('new-window', (event, url) => {
-        event.preventDefault();
+        playerWindow.webContents.executeJavaScript("document.querySelector('video').currentTime = " + playCurrentTime + ";")
     })
-};
+    playerWindow.setAlwaysOnTop(true)
 
-// 再生する動画を選択
+    playerWindow.webContents.on('new-window', (event, url) => {
+        event.preventDefault()
+    })
+}
+
 ipcMain.on('play-video', (event, video) => {
-    createPlayerWindow(video);
+    createPlayerWindow(video)
 });
 
-// 途中から再生する動画を選択
 ipcMain.on('resume-video', (event, video, time) => {
-    createPlayerWindow(video, time);
+    createPlayerWindow(video, time)
 });
 
-// 再生する動画を選択
 ipcMain.on('show-player', (event, video) => {
-    playerWindow.show();
-    mainWindow.send('showed-player');
+    if (playerWindow) {
+        playerWindow.show()
+        mainWindow.send('showed-player')
+    }
 });
 
-// 再生プレイヤーを非表示
 ipcMain.on('hide-player', async(event) => {
-    playerWindow.hide();
-    mainWindow.send('hidden-player');
+    if (playerWindow) {
+        playerWindow.hide()
+        mainWindow.send('hidden-player')
+    }
+});
+
+ipcMain.on('close-player', async(event) => {
+    if (playerWindow) {
+        playerWindow.close()
+    }
 });

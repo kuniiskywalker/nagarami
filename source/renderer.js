@@ -1,27 +1,29 @@
-const {ipcRenderer} = require('electron');
+const {ipcRenderer} = require('electron')
 
-var webview_wrapper = document.getElementById("webview_wrapper");
+var webview_wrapper = document.getElementById("webview_wrapper")
 
 // create_new_webview_instanse
-var webview = document.createElement("webview");
-webview.id = "foo";
-webview.setAttribute("src", "https://www.youtube.com");
-webview.setAttribute("preload", "inject.js");
+var webview = document.createElement("webview")
+webview.id = "youtube"
+webview.setAttribute("src", "https://www.youtube.com")
+webview.setAttribute("preload", "inject.js")
+
 const isYoutubeMovieUrl = (url) => {
-    return url.match(/https:\/\/www\.youtube\.com\/watch/).length > 0;
+    return url.match(/https:\/\/www\.youtube\.com\/watch/).length > 0
 }
 
 // append new_webview
-webview_wrapper.appendChild(webview);
+webview_wrapper.appendChild(webview)
 webview.addEventListener("dom-ready", function(){ 
 
-    const homeButton = document.getElementById('home');
-    const reloadButton = document.getElementById('reload');
-    const backButton = document.getElementById('back');
-    const forwardButton = document.getElementById('forward');
-    const playButton = document.getElementById('play');
-    const showButton = document.getElementById('show');
-    const hideButton = document.getElementById('hide');
+    const homeButton = document.getElementById('home')
+    const reloadButton = document.getElementById('reload')
+    const backButton = document.getElementById('back')
+    const forwardButton = document.getElementById('forward')
+    const playButton = document.getElementById('play')
+    const showButton = document.getElementById('show')
+    const hideButton = document.getElementById('hide')
+    const closeButton = document.getElementById('close')
 
     require('electron-context-menu')({
         window: webview,
@@ -32,48 +34,47 @@ webview.addEventListener("dom-ready", function(){
                 ipcRenderer.send('play-video', params.linkURL);
             }
         }]
-    });
-    // HOMEボタンをクリックしたらyoutubeトップへ
+    })
+
     homeButton.addEventListener('click', () => {
-        webview.setAttribute("src", "https://www.youtube.com");
-    });
-    // 更新ボタンをクリックしたらwebviewをリロードする
+        webview.setAttribute("src", "https://www.youtube.com")
+    })
+
     reloadButton.addEventListener('click', () => {
-        webview.reload();
-    });
+        webview.reload()
+    })
 
-    // 戻るボタンをクリックしたらwebviewを戻る
     backButton.addEventListener('click', () => {
-        webview.goBack();
-    });
+        webview.goBack()
+    })
 
-    // 進むボタンをクリックしたらwebviewを進ませる
     forwardButton.addEventListener('click', () => {
-        webview.goForward();
-    });
+        webview.goForward()
+    })
 
-    // 再生ボタンをクリックしたら再生中の動画をナガラミウィンドウで再生
     playButton.addEventListener('click', () => {
-        const url = webview.src;
+        const url = webview.src
         if (isYoutubeMovieUrl(url)) {
             webview.executeJavaScript("window.document.querySelector('video').pause()")
             webview.executeJavaScript(
                 `time: window.document.querySelector('video').currentTime`,
                 false,
                 function(time){
-                    ipcRenderer.send('resume-video', url, time);
+                    ipcRenderer.send('resume-video', url, time)
                 }
-            );
+            )
         }
-    });
+    })
 
-    // 進むボタンをクリックしたらwebviewを進ませる
     showButton.addEventListener('click', () => {
-        ipcRenderer.send('show-player');
-    });
+        ipcRenderer.send('show-player')
+    })
 
-    // 戻るボタンをクリックしたらwebviewを進ませる
     hideButton.addEventListener('click', () => {
-        ipcRenderer.send('hide-player');
-    });
-});
+        ipcRenderer.send('hide-player')
+    })
+
+    closeButton.addEventListener('click', () => {
+        ipcRenderer.send('close-player')
+    })
+})
