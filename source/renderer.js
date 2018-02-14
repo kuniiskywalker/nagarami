@@ -6,7 +6,6 @@ var webview_wrapper = document.getElementById("webview_wrapper")
 var webview = document.createElement("webview")
 webview.id = "youtube"
 webview.setAttribute("src", "https://www.youtube.com")
-webview.setAttribute("preload", "inject.js")
 
 const isYoutubeMovieUrl = (url) => {
     return url.match(/https:\/\/www\.youtube\.com\/watch/).length > 0
