@@ -1,0 +1,23 @@
+{
+  "name": "nagarami",
+  "version": "1.0.0",
+  "description": "## on mac",
+  "main": "build.ios.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuniiskywalker/nagarami.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kuniiskywalker/nagarami/issues"
+  },
+  "homepage": "https://github.com/kuniiskywalker/nagarami#readme",
+  "devDependencies": {
+    "electron-packager": "^11.0.1",
+    "electron-winstaller": "^2.6.4"
+  }
+}
